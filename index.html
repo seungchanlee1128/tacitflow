@@ -1,0 +1,2022 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TacitFlow AI 프로토타입</title>
+<meta name="description" content="공공기관 순환보직 인수인계 AI TacitFlow의 인터랙티브 프로토타입">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap">
+<style>
+/* Layout: fixed left navigation + fluid workspace. Real-time screens sit on a simulated office-PC desktop stage. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --surface-2:#F7F8FB; --surface-3:#EDF0F5;
+  --line:#E2E6EE; --line-2:#CFD6E2;
+  --fg:#121826; --fg-2:#465065; --fg-3:#7A8498;
+  --accent:#2E6BFF; --accent-2:#1D56E8; --accent-soft:#EAF0FF; --accent-ink:#1B47B5; --accent-line:#BCD0FF; --on-accent:#FFFFFF;
+  --ok:#11885A; --ok-soft:#E3F4EB; --warn:#A86200; --warn-soft:#FFF2D9; --risk:#D0353B; --risk-soft:#FCE9EA;
+  --shadow-1:0 1px 2px rgba(18,24,38,.05);
+  --shadow-2:0 2px 6px rgba(18,24,38,.05),0 14px 34px rgba(18,24,38,.09);
+  --glass:rgba(255,255,255,.82);
+  --scrim:rgba(14,20,32,.38);
+  --desk-1:#C7D5EC; --desk-2:#E8EEF7;
+  --lg-win:#FAFAFA; --lg-bar:#3D4B5F; --lg-bar-fg:#FFFFFF; --lg-head:#E3E7EC; --lg-line:#B9C0CA; --lg-fg:#1E2329; --lg-field:#FFFFFF; --lg-btn:#E8EBEF; --lg-menu:#EFF1F4; --lg-sel:#DCE8FF;
+  --paper:#FFFFFF; --paper-fg:#1B1E23; --paper-line:#3A3F47; --paper-head:#F1F3F6; --paper-hover:#F4F7FF; --paper-sel:#ECF2FF; --canvas:#E7EAF0;
+  --art-1:#CFE0FF; --art-2:#8FB2FA; --art-3:#B9D0FF; --art-paper:#FFFFFF; --art-line:#D7E3FB; --art-hi:#FFFFFF;
+  --mark:#FFF1B8;
+  --font:"Noto Sans KR","Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --side-w:236px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1119; --surface:#151A24; --surface-2:#1A202C; --surface-3:#222937;
+    --line:#262E3D; --line-2:#344055;
+    --fg:#E8ECF3; --fg-2:#AAB3C4; --fg-3:#7E889B;
+    --accent:#3D74FF; --accent-2:#5A8BFF; --accent-soft:#17233D; --accent-ink:#A9C2FF; --accent-line:#2D4475; --on-accent:#FFFFFF;
+    --ok:#46C98A; --ok-soft:#10291D; --warn:#F0B44E; --warn-soft:#2E220C; --risk:#FF7176; --risk-soft:#351619;
+    --shadow-1:0 1px 2px rgba(0,0,0,.35);
+    --shadow-2:0 2px 6px rgba(0,0,0,.3),0 14px 34px rgba(0,0,0,.4);
+    --glass:rgba(22,28,40,.86);
+    --scrim:rgba(0,0,0,.55);
+    --desk-1:#1A2639; --desk-2:#2A374D;
+    --lg-win:#22272E; --lg-bar:#0F141B; --lg-bar-fg:#E6E9ED; --lg-head:#2D333B; --lg-line:#46505B; --lg-fg:#D9DEE4; --lg-field:#1A1E24; --lg-btn:#353C45; --lg-menu:#2A3038; --lg-sel:#24385E;
+    --paper:#F3F4F6; --paper-fg:#1B1E23; --paper-line:#3A3F47; --paper-head:#E6E9EE; --paper-hover:#EAF0FC; --paper-sel:#E1EAFB; --canvas:#0F141D;
+    --art-1:#27467F; --art-2:#3C68C9; --art-3:#355DB3; --art-paper:#DCE6FA; --art-line:#AFC4EE; --art-hi:#9DB9F5;
+    --mark:#5A4A12;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1119; --surface:#151A24; --surface-2:#1A202C; --surface-3:#222937;
+  --line:#262E3D; --line-2:#344055;
+  --fg:#E8ECF3; --fg-2:#AAB3C4; --fg-3:#7E889B;
+  --accent:#3D74FF; --accent-2:#5A8BFF; --accent-soft:#17233D; --accent-ink:#A9C2FF; --accent-line:#2D4475; --on-accent:#FFFFFF;
+  --ok:#46C98A; --ok-soft:#10291D; --warn:#F0B44E; --warn-soft:#2E220C; --risk:#FF7176; --risk-soft:#351619;
+  --shadow-1:0 1px 2px rgba(0,0,0,.35);
+  --shadow-2:0 2px 6px rgba(0,0,0,.3),0 14px 34px rgba(0,0,0,.4);
+  --glass:rgba(22,28,40,.86);
+  --scrim:rgba(0,0,0,.55);
+  --desk-1:#1A2639; --desk-2:#2A374D;
+  --lg-win:#22272E; --lg-bar:#0F141B; --lg-bar-fg:#E6E9ED; --lg-head:#2D333B; --lg-line:#46505B; --lg-fg:#D9DEE4; --lg-field:#1A1E24; --lg-btn:#353C45; --lg-menu:#2A3038; --lg-sel:#24385E;
+  --paper:#F3F4F6; --paper-fg:#1B1E23; --paper-line:#3A3F47; --paper-head:#E6E9EE; --paper-hover:#EAF0FC; --paper-sel:#E1EAFB; --canvas:#0F141D;
+  --art-1:#27467F; --art-2:#3C68C9; --art-3:#355DB3; --art-paper:#DCE6FA; --art-line:#AFC4EE; --art-hi:#9DB9F5;
+  --mark:#5A4A12;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{margin:0;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sp{flex:1}
+.muted{color:var(--fg-3)}
+.mono{font-family:var(--mono);font-size:.92em;font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- buttons, pills ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line-2);background:var(--surface);font-weight:600;font-size:13.5px;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--surface-2)}
+.btn .ic{width:16px;height:16px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--fg-2)}
+.btn.ghost:hover{background:var(--surface-3)}
+.btn.sm{height:30px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.lg{height:46px;padding:0 20px;font-size:15px;border-radius:11px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.icon-btn{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:9px;color:var(--fg-2);position:relative}
+.icon-btn:hover{background:var(--surface-3)}
+.icon-btn.sm{width:28px;height:28px}
+.icon-btn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--risk);border:2px solid var(--surface)}
+.linkbtn{color:var(--accent-ink);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.pill{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:700;background:var(--surface-3);color:var(--fg-2);white-space:nowrap;flex:none}
+.pill .ic{width:13px;height:13px}
+.pill.blue{background:var(--accent-soft);color:var(--accent-ink)}
+.pill.solid{background:var(--accent);color:var(--on-accent)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.risk{background:var(--risk-soft);color:var(--risk)}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--surface-3);color:var(--fg-2);font-weight:500}
+.tag .ic{width:12px;height:12px}
+.src{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2);font-weight:500;text-align:left}
+.src:hover{border-color:var(--accent-line);color:var(--accent-ink)}
+.src .ic{width:13px;height:13px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.eyebrow{display:inline-block;font-size:12px;font-weight:700;color:var(--accent-ink);letter-spacing:.04em;margin-bottom:6px}
+.sec-k{font-size:12px;font-weight:700;color:var(--fg-3);letter-spacing:.04em;margin-bottom:8px}
+.bar{height:6px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+/* ---------- app shell ---------- */
+.app{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;display:flex;flex-direction:column;gap:14px;padding:18px 14px;background:var(--surface);border-right:1px solid var(--line);overflow-y:auto;z-index:40}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.02em;padding:2px 6px}
+.brand em{font-style:normal;color:var(--accent)}
+.logo{flex:none;display:block}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:10px;background:var(--surface-3)}
+.seg button{height:32px;border-radius:7px;font-weight:700;font-size:13px;color:var(--fg-2)}
+.seg button.on{background:var(--surface);color:var(--fg);box-shadow:var(--shadow-1)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-g{font-size:11.5px;font-weight:700;color:var(--fg-3);padding:12px 10px 6px;letter-spacing:.03em}
+.nav a{display:flex;align-items:center;gap:10px;height:38px;padding:0 10px;border-radius:9px;color:var(--fg-2);font-weight:600;font-size:13.5px}
+.nav a:hover{background:var(--surface-2);color:var(--fg)}
+.nav a.on{background:var(--accent-soft);color:var(--accent-ink)}
+.nav a .badge{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:700;display:grid;place-items:center}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.side-guide{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--fg-2);padding:8px 10px;border-radius:9px;border:1px dashed var(--line-2)}
+.side-guide:hover{color:var(--accent-ink);border-color:var(--accent-line)}
+.me{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--surface-2)}
+.me b{display:block;font-size:13px}
+.me small{display:block;font-size:11.5px;color:var(--fg-3)}
+.av{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:13px;flex:none}
+.av.sm{width:30px;height:30px;font-size:12px}
+.av.b{background:var(--fg-2);color:var(--surface)}
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;align-items:center;gap:12px;height:60px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--line)}
+.crumb{display:flex;align-items:center;gap:6px;color:var(--fg-3);font-size:13px;min-width:0;white-space:nowrap;overflow:hidden}
+.crumb b{color:var(--fg);font-weight:700}
+.crumb .ic{width:14px;height:14px}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;height:36px;width:min(320px,34vw);padding:0 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);color:var(--fg-3)}
+.search input{border:0;outline:0;background:transparent;width:100%;font-size:13px;color:var(--fg)}
+.search:focus-within{border-color:var(--accent-line)}
+.demo-pill{font-size:11.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);padding:4px 9px;border-radius:99px;white-space:nowrap}
+.menu{display:none}
+.scrim{display:none}
+.view{padding:22px 24px 120px;display:flex;flex-direction:column;gap:18px;min-width:0}
+
+/* page head */
+.ph{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ph h1{font-size:24px;font-weight:800;line-height:1.3}
+.ph p{margin-top:4px;color:var(--fg-2);max-width:68ch}
+.ph .acts{display:flex;gap:8px;flex-wrap:wrap}
+
+/* how-to strip */
+.how{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr) auto;gap:16px;align-items:center;padding:12px 14px 12px 16px;border-radius:14px;background:var(--accent-soft);border:1px solid var(--accent-line)}
+.how-why{display:flex;gap:10px;align-items:baseline;min-width:0}
+.how-tag{flex:none;font-size:11.5px;font-weight:800;color:var(--on-accent);background:var(--accent);padding:2px 8px;border-radius:6px}
+.how-why p{font-weight:600;color:var(--accent-ink);font-size:13.5px}
+.how-steps{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--fg-2);counter-reset:none}
+.how-steps li{display:flex;align-items:center;gap:6px}
+.how-steps b{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--surface);color:var(--accent-ink);font-size:11px;border:1px solid var(--accent-line);flex:none}
+.how-mini{align-self:flex-start;font-size:12px;font-weight:600;color:var(--accent-ink);display:inline-flex;gap:6px;align-items:center;padding:4px 10px;border-radius:99px;background:var(--accent-soft)}
+
+/* tour bar */
+.tourbar{position:fixed;right:20px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:14px;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:var(--shadow-2);max-width:calc(100vw - 40px)}
+.tb-k{font-size:12px;font-weight:800;color:var(--accent-ink);white-space:nowrap}
+.tb-dots{display:flex;gap:5px}
+.tb-dots a{width:7px;height:7px;border-radius:50%;background:var(--line-2)}
+.tb-dots a.past{background:var(--accent-line)}
+.tb-dots a.on{background:var(--accent);width:18px;border-radius:9px}
+.tb-prev,.tb-next{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;font-weight:700;font-size:13px;white-space:nowrap}
+.tb-prev{color:var(--fg-2)}
+.tb-prev:hover{background:var(--surface-3)}
+.tb-next{background:var(--accent);color:var(--on-accent)}
+.tb-next:hover{background:var(--accent-2)}
+.tb-prev .ic,.tb-next .ic{width:15px;height:15px}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:18px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card-h{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.card-h h3{font-size:15px;font-weight:700}
+.card-h .ic{color:var(--accent)}
+
+/* ---------- home ---------- */
+.hc{display:flex;flex-direction:column;gap:10px}
+.hc .k{font-size:12px;font-weight:700;color:var(--fg-3)}
+.hc h3{font-size:17px;font-weight:800}
+.hc .row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--fg-2)}
+.hc .btn{align-self:flex-start;margin-top:4px}
+.hc.hl{background:var(--accent-soft);border-color:var(--accent-line)}
+.hc.hl h3{color:var(--accent-ink)}
+.lst{display:flex;flex-direction:column}
+.lst li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.lst li:first-child{border-top:0}
+.lst .t{flex:1;min-width:0}
+.lst .t b{display:block;font-size:13.5px;font-weight:600}
+.lst .t small{display:block;color:var(--fg-3);font-size:12px}
+.date-chip{flex:none;width:52px;text-align:center;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);padding:5px 0;font-family:var(--mono);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.toggle .sw{width:38px;height:22px;border-radius:99px;background:var(--line-2);position:relative;transition:background .2s;flex:none}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-1);transition:left .2s}
+.toggle[aria-pressed="true"] .sw{background:var(--accent)}
+.toggle[aria-pressed="true"] .sw::after{left:19px}
+.tool-tile{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.tool-tile:hover{border-color:var(--accent-line);background:var(--surface-2)}
+.tool-tile .ti{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:var(--accent-soft);color:var(--accent);flex:none}
+.tool-tile b{display:block;font-size:14px}
+.tool-tile small{display:block;font-size:12.5px;color:var(--fg-2)}
+
+/* ---------- curriculum ---------- */
+.srcs .s{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.srcs .s .si{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--surface-3);color:var(--fg-2);flex:none}
+.srcs .s .st{flex:1;min-width:0}
+.srcs .s b{display:block;font-size:13.5px}
+.srcs .s small{display:block;font-size:12px;color:var(--fg-3)}
+.srcs .s.hl{background:var(--accent-soft);border-color:var(--accent-line)}
+.srcs .s.hl .si{background:var(--accent);color:var(--on-accent)}
+.srcs .s.hl b{color:var(--accent-ink)}
+.week{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.week.on{border:2px solid var(--accent);padding:17px;box-shadow:0 0 0 4px var(--accent-soft)}
+.week-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.week-h small{font-size:12px;font-weight:700;color:var(--accent-ink)}
+.week h3{font-size:17px;font-weight:800}
+.week .stage{font-size:12px;color:var(--fg-3);margin-top:-6px}
+.wi{width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;font-size:13.5px;color:var(--fg-2);text-align:left}
+.wi:hover{background:var(--surface-2)}
+.wi .ic{color:var(--fg-3)}
+.wi.done .ic{color:var(--accent)}
+.wi.now{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+.wi.now .ic{color:var(--accent)}
+.wi.lock{opacity:.6}
+.wi-now{margin-left:auto;font-size:11px;font-weight:700}
+.week .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.pipe{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--fg-2)}
+.pipe span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);font-weight:600}
+.pipe .ic{width:14px;height:14px}
+.pipe .arr{color:var(--fg-3)}
+.case{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-align:left}
+.case:hover{border-color:var(--accent-line)}
+.case small{font-size:11.5px;font-weight:700;color:var(--accent-ink)}
+.case b{font-size:14.5px}
+.case p{font-size:12.5px;color:var(--fg-2)}
+.case .f{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--fg-3);margin-top:auto}
+.case .f .ic{width:13px;height:13px}
+
+/* ---------- lesson ---------- */
+.lesson{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.steps{display:flex;flex-direction:column;counter-reset:st}
+.steps li{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;padding-bottom:18px}
+.steps li::before{counter-increment:st;content:counter(st);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:13px;z-index:1}
+.steps li::after{content:"";position:absolute;left:14.5px;top:30px;bottom:0;width:1px;background:var(--line-2)}
+.steps li:last-child::after{display:none}
+.steps li.weak::before{background:var(--warn);color:var(--surface)}
+.steps b{display:block;font-size:14.5px;margin-top:4px}
+.steps p{font-size:13px;color:var(--fg-2);margin:3px 0 8px}
+.weak-note{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--warn);margin-bottom:6px}
+.memo{margin:0;padding:14px 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:13.5px;color:var(--fg);line-height:1.65}
+.memo cite{display:block;margin-top:8px;font-style:normal;font-size:12px;color:var(--fg-3)}
+.laws li{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.laws li:first-child{border-top:0}
+.quiz{display:flex;flex-direction:column;gap:14px}
+.qz b{display:block;font-size:14px;margin-bottom:8px}
+.qz .opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);font-size:13.5px;text-align:left;width:100%;background:var(--surface)}
+.opt:hover{border-color:var(--accent-line)}
+.opt .r{width:16px;height:16px;border-radius:50%;border:2px solid var(--line-2);flex:none}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .r{border-color:var(--accent);background:radial-gradient(circle,var(--accent) 45%,transparent 50%)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--risk);background:var(--risk-soft)}
+.qres{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:12px;font-size:13.5px;font-weight:600}
+.qres.ok{background:var(--ok-soft);color:var(--ok)}
+.qres.no{background:var(--warn-soft);color:var(--warn)}
+.chatp{position:sticky;top:76px;display:flex;flex-direction:column;max-height:calc(100vh - 100px)}
+.chatp .ch{padding:14px 16px;border-bottom:1px solid var(--line)}
+.chatp .ch b{display:block;font-size:14.5px}
+.chatp .ch small{font-size:12px;color:var(--fg-3)}
+.cms{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-height:200px}
+.cm{max-width:92%;padding:10px 12px;border-radius:12px;font-size:13px;line-height:1.6;display:flex;flex-direction:column;gap:8px}
+.cm.me{align-self:flex-end;background:var(--accent);color:var(--on-accent);border-bottom-right-radius:4px}
+.cm.bot{align-self:flex-start;background:var(--surface-2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.cm.need{background:var(--warn-soft);border-color:transparent}
+.cm-src{display:flex;flex-wrap:wrap;gap:5px}
+.cm-link{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--accent-ink);font-size:12.5px}
+.cm-link .ic{width:14px;height:14px}
+.sugs{display:flex;flex-direction:column;gap:6px;padding:0 16px 10px}
+.sug{text-align:left;font-size:12.5px;padding:8px 10px;border-radius:9px;border:1px dashed var(--accent-line);color:var(--accent-ink);background:var(--surface)}
+.sug:hover{background:var(--accent-soft)}
+.cin{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.cin input{flex:1;min-width:0;height:38px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface-2);padding:0 12px;font-size:13px}
+.cin input:focus{outline:0;border-color:var(--accent)}
+
+/* ---------- sandbox ---------- */
+.sb{display:grid;grid-template-columns:232px minmax(0,1fr) 320px;gap:16px;align-items:start}
+.sb-list{padding:14px;display:flex;flex-direction:column;gap:6px}
+.sl{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:11px;text-align:left;width:100%}
+.sl:hover{background:var(--surface-2)}
+.sl.on{background:var(--accent-soft)}
+.sl-ic{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--surface-3);color:var(--fg-2);flex:none}
+.sl.on .sl-ic{background:var(--accent);color:var(--on-accent)}
+.sl-ic .ic{width:15px;height:15px}
+.sl-t b{display:block;font-size:13px;line-height:1.4}
+.sl.on .sl-t b{color:var(--accent-ink)}
+.sl-t small{display:block;font-size:11.5px;color:var(--fg-3);margin-top:2px}
+.sb-list-note{margin-top:8px;padding:10px;border-radius:10px;background:var(--surface-2);font-size:11.5px;color:var(--fg-3);display:flex;gap:6px}
+.sb-list-note .ic{width:14px;height:14px;margin-top:2px}
+.sb-main{display:flex;flex-direction:column;min-height:620px}
+.sb-h{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sb-h b{font-size:15.5px}
+.sb-h-ic{color:var(--accent);display:grid}
+.call{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.call .rec{width:14px;height:14px;color:var(--risk)}
+.sb-brief{padding:12px 18px;font-size:13px;color:var(--fg-2);background:var(--surface-2);border-bottom:1px solid var(--line)}
+.sb-brief b{color:var(--fg);margin-right:4px}
+.sb-crit{display:block;margin-top:4px;font-size:12px;color:var(--fg-3)}
+.sb-log{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;flex-direction:column;gap:4px;max-width:78%}
+.msg .who{font-size:11.5px;color:var(--fg-3);font-weight:600}
+.msg p{padding:12px 14px;border-radius:12px;font-size:13.5px;line-height:1.6}
+.msg.them p{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-1);border-top-left-radius:4px}
+.msg.me{align-self:flex-end;align-items:flex-end}
+.msg.me p{background:var(--accent-soft);color:var(--fg);border-top-right-radius:4px}
+.hints{margin:0 18px;display:flex;flex-direction:column;gap:6px}
+.hints p{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--warn-soft);font-size:12.5px;color:var(--fg)}
+.hints .ic{width:15px;height:15px;color:var(--warn);margin-top:2px}
+.sb-comp{margin:14px 18px 18px;padding:14px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.fld{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:start}
+.fld label{font-size:12.5px;font-weight:600;color:var(--fg-2);padding-top:9px}
+.fld input,.fld textarea,.fld select{width:100%;border:1px solid var(--line-2);border-radius:9px;background:var(--surface);padding:8px 11px;font-size:13.5px;resize:vertical;line-height:1.55}
+.fld input{height:38px}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.sb-act{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sb-fb{padding:16px;display:flex;flex-direction:column;gap:14px}
+.fb-h b{display:block;font-size:15px}
+.fb-h small{font-size:12px;color:var(--fg-3)}
+.fb-l{display:flex;flex-direction:column;gap:8px}
+.fb-l li{border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+.fb-row{display:flex;align-items:center;gap:8px;font-size:13.5px}
+.fb-row b{flex:1;font-weight:600}
+.fb-l li.ok .fb-row .ic{color:var(--ok)}
+.fb-l li.miss,.fb-l li.part{border-color:var(--accent-line);background:var(--accent-soft)}
+.fb-l li.miss .fb-row .ic,.fb-l li.part .fb-row .ic{color:var(--accent)}
+.fb-l.pre li .ic{color:var(--fg-3)}
+.fb-fix{margin-top:8px;padding-top:8px;border-top:1px solid var(--accent-line);display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.fb-fix-k{font-size:11.5px;font-weight:800;color:var(--accent-ink)}
+.fb-fix p{font-size:12.5px;color:var(--fg)}
+.fb-score-h{display:flex;justify-content:space-between;font-size:12.5px;color:var(--fg-2);margin-bottom:6px}
+.fb-score-h b{color:var(--accent-ink)}
+.fb-done{display:flex;gap:8px;padding:12px;border-radius:12px;background:var(--ok-soft);color:var(--ok);font-size:13px;font-weight:600}
+.fb-next{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;border:1px solid var(--line);text-align:left;width:100%}
+.fb-next:hover{border-color:var(--accent-line)}
+.fb-next span{flex:1}
+.fb-next small{display:block;font-size:11.5px;color:var(--fg-3)}
+.fb-next b{font-size:13.5px}
+.fb-note{font-size:11.5px;color:var(--fg-3)}
+.fb-empty{font-size:12.5px;color:var(--fg-2);padding:12px;border-radius:10px;background:var(--surface-2)}
+
+/* ---------- templates ---------- */
+.tp{display:grid;grid-template-columns:220px minmax(0,1fr) 320px;gap:16px;align-items:start}
+.tp-list{padding:14px;display:flex;flex-direction:column;gap:4px}
+.tl{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;text-align:left;width:100%}
+.tl:hover{background:var(--surface-2)}
+.tl.on{background:var(--accent-soft)}
+.tl .ic{color:var(--fg-3);margin-top:1px}
+.tl.on .ic{color:var(--accent)}
+.tl b{display:block;font-size:13px}
+.tl.on b{color:var(--accent-ink)}
+.tl small{display:block;font-size:11.5px;color:var(--fg-3)}
+.tp-doc{display:flex;flex-direction:column;overflow:hidden}
+.tp-doc-h{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tp-doc-h b{font-size:13.5px}
+.tp-meta{display:flex;gap:14px;flex-wrap:wrap;padding:8px 16px;font-size:12px;color:var(--fg-3);border-bottom:1px solid var(--line)}
+.tp-canvas{background:var(--canvas);padding:26px 18px;overflow-x:auto}
+.paper{background:var(--paper);color:var(--paper-fg);width:100%;max-width:640px;min-width:480px;margin:0 auto;padding:42px 44px 48px;box-shadow:0 1px 3px rgba(0,0,0,.12),0 10px 30px rgba(0,0,0,.12);border-radius:2px;font-size:13px}
+.paper h3{text-align:center;letter-spacing:.55em;font-size:22px;font-weight:800;margin:0 0 24px;text-indent:.55em}
+.doc-t{width:100%;border-collapse:collapse}
+.doc-t th,.doc-t td{border:1px solid var(--paper-line);padding:9px 10px;vertical-align:middle;line-height:1.5}
+.doc-t th{width:82px;background:var(--paper-head);font-weight:700;text-align:center;font-size:12.5px}
+.doc-t td.f{cursor:pointer;position:relative}
+.doc-t td.f:hover{background:var(--paper-hover)}
+.doc-t td.sel{outline:2px solid var(--accent);outline-offset:-2px;background:var(--paper-sel)}
+.doc-t td.err{outline:2px solid var(--risk);outline-offset:-2px}
+.doc-t td.wrn{outline:2px dashed var(--warn);outline-offset:-2px}
+.cellv{margin-right:6px}
+.fchip{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;background:#E6EEFF;color:#1B47B5;vertical-align:1px}
+.fchip.need{background:#FFF0D1;color:#8A5200;border:1px dashed #C98A20}
+.paper .sign{margin-top:22px;text-align:center;font-size:13px}
+.paper .sign-row{display:flex;justify-content:flex-end;gap:28px;margin-top:16px;font-size:12.5px}
+.ins{background:var(--mark);border-radius:3px;padding:0 2px}
+.tp-side{padding:16px;display:flex;flex-direction:column;gap:12px}
+.tp-side-h b{display:block;font-size:15px}
+.tp-side-h small{font-size:12px;color:var(--fg-3)}
+.prog-h{display:flex;justify-content:space-between;font-size:12.5px;color:var(--fg-2);margin-bottom:6px}
+.prog-h b{color:var(--accent-ink)}
+.fc{border:1px solid var(--line);border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.fc.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.fc.err{border-color:var(--risk)}
+.fc.wrn{border-color:var(--warn)}
+.fc-h{display:flex;align-items:center;gap:8px;text-align:left;width:100%}
+.fc-h b{flex:1;font-size:13px}
+.fc-v{font-size:12.5px;color:var(--fg-2)}
+.fc-src{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--fg-3)}
+.fc-src .ic{width:12px;height:12px}
+.fc input,.fc textarea{width:100%;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);padding:7px 10px;font-size:13px;resize:vertical}
+.fc input:focus,.fc textarea:focus{outline:0;border-color:var(--accent)}
+.fc-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.fc-warn{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:8px 10px;border-radius:9px;background:var(--warn-soft);color:var(--fg);font-size:12px}
+.fc-warn .ic{width:14px;height:14px;color:var(--warn)}
+.issues{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;background:var(--risk-soft)}
+.issues b{font-size:13px;color:var(--risk)}
+.issue{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.issue span{flex:1}
+.issue .ic{width:14px;height:14px}
+.issue.err .ic{color:var(--risk)}
+.issue.warn .ic{color:var(--warn)}
+.flow-steps{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:11.5px;font-weight:700;color:var(--fg-3)}
+.flow-steps span{padding:3px 8px;border-radius:6px;background:var(--surface-3)}
+.flow-steps span.done{background:var(--accent-soft);color:var(--accent-ink)}
+.flow-steps span.cur{background:var(--accent);color:var(--on-accent)}
+.flow-steps .ic{width:12px;height:12px}
+.tp-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tp-actions .btn{width:100%}
+.tp-note{font-size:11.5px;color:var(--fg-3)}
+
+/* ---------- records ---------- */
+.rc{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+.rc-filters{display:flex;gap:6px;flex-wrap:wrap}
+.fchipb{height:32px;padding:0 12px;border-radius:99px;border:1px solid var(--line-2);font-size:12.5px;font-weight:600;color:var(--fg-2);background:var(--surface)}
+.fchipb.on{background:var(--fg);color:var(--surface);border-color:var(--fg)}
+.rc-list{display:flex;flex-direction:column;gap:8px}
+.ri{display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);width:100%}
+.ri:hover{border-color:var(--accent-line)}
+.ri.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.ri .rt{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--fg-3)}
+.ri b{font-size:14px}
+.ri.locked{background:var(--surface-2);color:var(--fg-3);cursor:not-allowed}
+.ri.new{border-style:dashed;border-color:var(--ok)}
+.rd{padding:20px;display:flex;flex-direction:column;gap:16px}
+.rd h2{font-size:20px;font-weight:800}
+.kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px 16px;font-size:13.5px}
+.kv dt{color:var(--fg-3);font-weight:600;font-size:12.5px;padding-top:1px}
+.kv dd{margin:0}
+.kv ol{list-style:decimal;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+.ver{display:flex;flex-direction:column;gap:8px}
+.ver-row{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:12.5px}
+.ver-bar{height:12px;border-radius:99px;background:var(--surface-3);position:relative;overflow:hidden}
+.ver-bar i{position:absolute;top:0;bottom:0;border-radius:99px}
+.ver-bar i.old{background:var(--line-2)}
+.ver-bar i.cur{background:var(--accent)}
+.ver-axis{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;font-size:11px;color:var(--fg-3);font-family:var(--mono)}
+.ver-axis div{display:flex;justify-content:space-between}
+
+/* ---------- desktop stage (real-time) ---------- */
+.stage{position:relative;border-radius:18px;background:linear-gradient(135deg,var(--desk-1),var(--desk-2));padding:18px 18px 58px;border:1px solid var(--line);overflow:hidden}
+.stage-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.stage-label{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px;background:var(--glass);color:var(--fg-2);border:1px solid var(--line)}
+.stage-label .ic{width:14px;height:14px}
+.stage-grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
+.taskbar{position:absolute;left:0;right:0;bottom:0;height:42px;display:flex;align-items:center;gap:6px;padding:0 14px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);font-size:12px;color:var(--fg-2)}
+.taskbar .tk{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:7px}
+.taskbar .tk.on{background:var(--surface);box-shadow:var(--shadow-1);color:var(--fg);font-weight:600}
+.taskbar .tk .ic{width:15px;height:15px}
+.taskbar .clock{margin-left:auto;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lwin{position:relative;background:var(--lg-win);border:1px solid var(--lg-line);border-radius:6px;box-shadow:var(--shadow-2);font-size:13px;color:var(--lg-fg);overflow:hidden;min-width:0}
+.lwin-bar{background:var(--lg-bar);color:var(--lg-bar-fg);height:30px;display:flex;align-items:center;padding:0 10px;font-size:12px;gap:8px}
+.lwin-bar .wb{margin-left:auto;display:flex;gap:10px;opacity:.75;font-family:var(--mono)}
+.lwin-menu{background:var(--lg-menu);border-bottom:1px solid var(--lg-line);display:flex;gap:16px;padding:5px 12px;font-size:12px;flex-wrap:wrap}
+.lwin-menu span.on{font-weight:700;text-decoration:underline}
+.lwin-body{padding:14px;overflow-x:auto}
+.lwin-title{font-size:14px;font-weight:700;margin-bottom:10px;padding-left:8px;border-left:3px solid var(--lg-bar)}
+.ltable{width:100%;border-collapse:collapse;min-width:440px}
+.ltable th{background:var(--lg-head);border:1px solid var(--lg-line);padding:8px 10px;text-align:left;width:132px;font-weight:600;font-size:12.5px;vertical-align:middle}
+.ltable td{border:1px solid var(--lg-line);padding:7px 10px;vertical-align:middle}
+.lf{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;padding:2px;border-radius:4px}
+.lf input,.lf select{height:28px;border:1px solid var(--lg-line);background:var(--lg-field);color:var(--lg-fg);border-radius:2px;padding:0 6px;font-size:12.5px}
+.lf input[type="text"]{width:min(320px,100%)}
+.lf .fname{font-size:12px;font-family:var(--mono)}
+.lbtn{height:28px;padding:0 12px;border:1px solid var(--lg-line);background:var(--lg-btn);color:var(--lg-fg);border-radius:2px;font-size:12.5px;white-space:nowrap}
+.lbtn:hover{filter:brightness(.97)}
+.lbtn.pri{background:var(--lg-bar);color:var(--lg-bar-fg);border-color:var(--lg-bar)}
+.lacts{display:flex;justify-content:flex-end;gap:6px;margin-top:12px}
+.tf-focus{outline:2px solid var(--accent);outline-offset:3px;box-shadow:0 0 0 7px rgba(46,107,255,.18);animation:tfpulse 1.8s ease-in-out infinite}
+.tf-recheck{outline:2px dashed var(--warn);outline-offset:3px}
+@keyframes tfpulse{0%,100%{box-shadow:0 0 0 5px rgba(46,107,255,.18)}50%{box-shadow:0 0 0 10px rgba(46,107,255,.06)}}
+.tf-brow td{border:0!important;padding:4px 0 10px!important;background:transparent}
+.tf-bubble{position:relative;margin-left:132px;background:var(--surface);color:var(--fg);border:1px solid var(--accent-line);border-radius:12px;box-shadow:var(--shadow-2);padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:13px;max-width:460px}
+.tf-bubble::before{content:"";position:absolute;top:-7px;left:26px;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--accent-line);border-top:1px solid var(--accent-line);transform:rotate(45deg)}
+.tf-b-h{display:flex;align-items:center;gap:8px}
+.tf-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--on-accent);background:var(--accent);padding:2px 7px;border-radius:6px}
+.tf-badge .ic{width:12px;height:12px}
+.tf-b-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.src-s{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--fg-3)}
+.src-s .ic{width:12px;height:12px}
+.tf-note{font-size:12px;padding:7px 9px;border-radius:8px;background:var(--warn-soft);color:var(--fg)}
+.dock{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-2);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.dock-h{display:flex;align-items:center;gap:8px}
+.dock-h b{font-size:14px;flex:1}
+.live{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--ok)}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.live.off{color:var(--fg-3)}
+.dock-sub{font-size:12px;color:var(--fg-3)}
+.gsteps{display:flex;flex-direction:column;gap:4px}
+.gsteps button{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:10px;font-size:13px}
+.gsteps button:hover{background:var(--surface-3)}
+.gsteps b{display:block;font-weight:600}
+.gsteps small{display:block;font-size:11.5px;color:var(--warn);font-weight:600}
+.gsteps .ic{margin-top:1px;color:var(--fg-3)}
+.gsteps .done .ic{color:var(--accent)}
+.gsteps .now button{background:var(--accent-soft)}
+.gsteps .now b{color:var(--accent-ink);font-weight:800}
+.gsteps .now .ic{color:var(--accent)}
+.gsteps .recheck .ic{color:var(--warn)}
+.dock-actions{display:flex;gap:6px;flex-wrap:wrap}
+.dock-note{font-size:11.5px;color:var(--fg-3);border-top:1px solid var(--line);padding-top:10px}
+.manual li label{display:flex;gap:8px;align-items:flex-start;padding:7px 4px;font-size:13px}
+.manual input{margin-top:3px;accent-color:var(--accent)}
+.tf-fail{position:absolute;inset:30px 0 0;background:var(--scrim);display:grid;place-items:center;padding:16px;z-index:5}
+.tf-fail .box{background:var(--surface);color:var(--fg);border-radius:14px;padding:18px;max-width:360px;box-shadow:var(--shadow-2);display:flex;flex-direction:column;gap:10px}
+.tf-fail .box b{font-size:15px}
+.tf-fail .box p{font-size:13px;color:var(--fg-2)}
+.tf-fail .row{display:flex;gap:6px;flex-wrap:wrap}
+.lmodal{position:absolute;inset:30px 0 0;background:rgba(0,0,0,.25);display:grid;place-items:center;z-index:4;padding:12px}
+.lmodal .lwin{width:min(420px,100%)}
+
+/* widget (floating) */
+.wstage{position:relative}
+.wdoc{margin-right:368px}
+.editor{background:var(--paper);color:var(--paper-fg);margin:0 auto;max-width:620px;padding:28px 32px;min-height:340px;font-size:13.5px;line-height:1.9;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.editor .er{display:grid;grid-template-columns:56px 1fr;gap:6px}
+.editor .er b{font-weight:700}
+.editor .in{padding-left:18px}
+.caret{display:inline-block;width:2px;height:1.1em;background:var(--paper-fg);vertical-align:-2px;animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.fw{position:absolute;top:0;right:0;width:350px;z-index:6}
+.fw-pill{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px 0 8px;border-radius:99px;background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:var(--shadow-2);font-weight:700;font-size:13px;float:right}
+.fw-panel{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-2);display:flex;flex-direction:column;max-height:640px}
+.fw-h{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.fw-h b{flex:1;font-size:14px}
+.fw-ctx{padding:8px 14px;font-size:11.5px;color:var(--fg-3);border-bottom:1px solid var(--line);display:flex;gap:6px;align-items:center}
+.fw-ctx .ic{width:13px;height:13px}
+.fw-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-height:180px}
+.ans{display:flex;flex-direction:column;gap:7px;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:13px}
+.ans.need{border-color:var(--warn)}
+.ans-k{font-size:11.5px;font-weight:800;color:var(--fg-3);letter-spacing:.03em}
+.ans-row{display:flex;align-items:center;gap:8px}
+.ans-main{font-weight:600;line-height:1.55}
+.ans-cond li{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0}
+.ans-cond .ic{width:14px;height:14px;margin-top:3px;color:var(--ok)}
+.ans-cond .q .ic{color:var(--warn)}
+.ans-src{display:flex;flex-direction:column;gap:5px}
+.ans-act{display:flex;gap:6px;flex-wrap:wrap}
+.preview{padding:10px;border-radius:10px;background:var(--accent-soft);font-size:12.5px;display:flex;flex-direction:column;gap:8px}
+.preview q{quotes:none;font-weight:600;color:var(--fg)}
+
+/* alert */
+.lgrid{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.lgrid th{background:var(--lg-head);border:1px solid var(--lg-line);padding:6px 8px;text-align:left;font-weight:600}
+.lgrid td{border:1px solid var(--lg-line);padding:6px 8px;font-family:var(--mono);font-size:11.5px}
+.lgrid td.k{font-family:var(--font);font-size:12px}
+.dlg-body{padding:14px;display:flex;flex-direction:column;gap:10px;font-size:12.5px}
+.dlg-row{display:grid;grid-template-columns:84px minmax(0,1fr);gap:8px;align-items:center}
+.dlg-row input[type="text"],.dlg-row input[type="password"],.dlg-row select{height:28px;border:1px solid var(--lg-line);background:var(--lg-field);color:var(--lg-fg);border-radius:2px;padding:0 6px;font-size:12px;width:100%}
+.dlg-row label.ck{display:flex;gap:6px;align-items:center}
+.alert-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-2);overflow:hidden;display:flex;flex-direction:column}
+.alert-top{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--risk-soft);color:var(--risk)}
+.alert-top b{font-size:13px;flex:1}
+.alert-top.mid{background:var(--warn-soft);color:var(--warn)}
+.alert-top.done{background:var(--ok-soft);color:var(--ok)}
+.alert-body{padding:14px;display:flex;flex-direction:column;gap:12px;font-size:13px}
+.alert-body h4{font-size:15px;line-height:1.45}
+.ab-k{font-size:11.5px;font-weight:800;color:var(--fg-3);margin-bottom:4px}
+.chk li{display:flex;gap:8px;align-items:flex-start;padding:4px 0}
+.chk .ic{width:16px;height:16px;margin-top:2px;color:var(--fg-3)}
+.chk li.ok .ic{color:var(--ok)}
+.chk li.unk .ic{color:var(--warn)}
+.chk small{display:block;font-size:11.5px;color:var(--fg-3)}
+.alert-foot{display:flex;gap:6px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
+.alog li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line)}
+.alog li:first-child{border-top:0}
+.alog .mono{color:var(--fg-3);flex:none}
+.focus-hl{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* ---------- senior: check-in ---------- */
+.os-toast{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-2);max-width:460px}
+.os-toast b{display:block;font-size:13.5px}
+.os-toast small{font-size:12px;color:var(--fg-3)}
+.ci{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.files{display:flex;flex-direction:column}
+.frow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.frow:first-child{border-top:0}
+.frow.on{background:var(--accent-soft)}
+.fname-b{display:flex;gap:10px;align-items:center;text-align:left;min-width:0}
+.fname-b .ft{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;font-size:10px;font-weight:800;font-family:var(--mono);background:var(--surface-3);color:var(--fg-2);flex:none;text-transform:uppercase}
+.fname-b b{display:block;font-size:13px;font-weight:600}
+.fname-b small{display:block;font-size:11.5px;color:var(--fg-3)}
+.fcls{display:flex;flex-direction:column;gap:3px;align-items:flex-start;font-size:12px;color:var(--fg-2)}
+.dec{display:flex;gap:3px;padding:3px;border-radius:9px;background:var(--surface-3)}
+.dec button{height:28px;padding:0 9px;border-radius:7px;font-size:12px;font-weight:600;color:var(--fg-2);position:relative;white-space:nowrap}
+.dec button.rec::after{content:"";position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.dec button.on{background:var(--surface);color:var(--fg);box-shadow:var(--shadow-1)}
+.dec button.on.approve,.dec button.on.mask{color:var(--accent-ink)}
+.dec button.on.exclude{color:var(--risk)}
+.dec button.on.hold{color:var(--warn)}
+.ci-side{padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:76px}
+.excerpt{padding:12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:12.5px;line-height:1.8}
+.pii{background:var(--risk-soft);color:var(--risk);border-radius:4px;padding:0 3px;font-weight:600}
+.pii.m{background:var(--fg);color:var(--surface);font-family:var(--mono);font-size:11.5px}
+.ci-sum{position:sticky;bottom:calc(76px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-2)}
+.ci-sum .cnt{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--fg-2)}
+.ci-sum .cnt b{color:var(--fg);font-variant-numeric:tabular-nums}
+.result{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.result .r{padding:14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.result .r b{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.result .r small{font-size:12px;color:var(--fg-2)}
+
+/* capture */
+.cp{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+.mini-scr{border:1px solid var(--lg-line);border-radius:6px;background:var(--lg-win);color:var(--lg-fg);overflow:hidden;font-size:12px;position:relative}
+.ms-bar{background:var(--lg-bar);color:var(--lg-bar-fg);padding:6px 10px;font-size:11.5px}
+.ms-body{padding:12px;display:flex;flex-direction:column;gap:6px}
+.ms-row{display:grid;grid-template-columns:110px minmax(0,1fr);border:1px solid var(--lg-line)}
+.ms-row span{padding:7px 8px}
+.ms-row span:first-child{background:var(--lg-head);font-weight:600}
+.ms-row.hit{outline:2px solid var(--risk);outline-offset:1px;position:relative}
+.click-dot{position:absolute;right:14px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;border:3px solid var(--risk);background:rgba(208,53,59,.15)}
+.blur{filter:blur(4px);user-select:none}
+.mask-tag{display:inline-flex;align-items:center;gap:4px;margin-left:6px;font-size:10.5px;font-weight:700;color:var(--surface);background:var(--fg);padding:1px 6px;border-radius:5px;filter:none}
+.strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.fr{display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:10px;border-radius:11px;border:1px solid var(--line);background:var(--surface);text-align:left;font-size:12px;min-width:0}
+.fr:hover{border-color:var(--accent-line)}
+.fr.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.fr small{font-family:var(--mono);color:var(--fg-3);font-size:11px}
+.fr b{font-size:12.5px;line-height:1.4}
+.fr.ghost{border-style:dashed;color:var(--fg-3);background:var(--surface-2)}
+.shimmer{background:linear-gradient(90deg,var(--surface-3),var(--surface),var(--surface-3));background-size:200% 100%;animation:sh 1.2s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.pcard{padding:16px;display:flex;flex-direction:column;gap:12px}
+.pcard h3{font-size:16px}
+.pc-steps{display:flex;flex-direction:column;gap:8px;counter-reset:pc}
+.pc-steps li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;font-size:12.5px}
+.pc-steps li::before{counter-increment:pc;content:counter(pc);display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:var(--surface-3);font-weight:800;font-size:11.5px}
+.pc-steps b{display:block;font-size:13px}
+.pc-steps small{display:block;color:var(--fg-3)}
+.pcard textarea{width:100%;border:1px solid var(--line-2);border-radius:9px;background:var(--surface);padding:8px 10px;font-size:13px;resize:vertical}
+.pcard textarea:focus{outline:0;border-color:var(--accent)}
+.state{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;font-size:12.5px}
+.state.wait{background:var(--warn-soft)}
+.state.ok{background:var(--ok-soft)}
+.state .ic{width:16px;height:16px;margin-top:2px}
+.state.wait .ic{color:var(--warn)}
+.state.ok .ic{color:var(--ok)}
+
+/* review */
+.rv{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+.rv-i{display:flex;flex-direction:column;gap:5px;text-align:left;width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.rv-i:hover{border-color:var(--accent-line)}
+.rv-i.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.rv-i b{font-size:13.5px}
+.rv-i small{font-size:11.5px;color:var(--fg-3)}
+.rv-i .rt{display:flex;gap:6px;align-items:center}
+.rv-d{padding:20px;display:flex;flex-direction:column;gap:14px}
+.rv-d h2{font-size:19px;font-weight:800}
+.found{padding:12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:13px;display:flex;gap:8px}
+.found .ic{width:16px;height:16px;color:var(--warn);margin-top:2px}
+.rv-d textarea,.rv-d select{width:100%;border:1px solid var(--line-2);border-radius:10px;background:var(--surface);padding:10px 12px;font-size:13.5px;resize:vertical}
+.rv-d select{height:40px;padding:0 10px}
+.rv-d textarea:focus,.rv-d select:focus{outline:0;border-color:var(--accent)}
+
+/* sheet + toast */
+.sheet-bg{position:fixed;inset:0;background:var(--scrim);z-index:80}
+.sheet{position:fixed;z-index:81;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;background:var(--surface);border-radius:16px;box-shadow:var(--shadow-2);border:1px solid var(--line)}
+.sheet header{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sheet header b{flex:1;font-size:15px}
+.sheet-body{padding:16px;display:flex;flex-direction:column;gap:12px;font-size:13.5px;line-height:1.75}
+.sheet-body .meta{font-size:12px;color:var(--fg-3)}
+.sheet-body .doc{padding:14px 16px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.sheet-body mark{background:var(--fg);color:var(--surface);border-radius:4px;padding:0 4px;font-size:12px}
+.toasts{position:fixed;top:calc(72px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(520px,calc(100vw - 32px))}
+.toast{display:flex;gap:8px;align-items:flex-start;padding:11px 14px;border-radius:12px;background:var(--fg);color:var(--surface);font-size:13px;font-weight:600;box-shadow:var(--shadow-2);animation:tin .25s ease;pointer-events:auto}
+.toast .ic{width:16px;height:16px;margin-top:1px}
+.toast.ok .ic{color:var(--ok)}
+.toast.warn .ic{color:var(--warn)}
+@keyframes tin{from{opacity:0;transform:translateY(-6px)}}
+
+/* ---------- tour (landing) ---------- */
+.tour{max-width:1180px;margin:0 auto;padding-inline:24px;padding-block:0 80px}
+.t-nav{display:flex;align-items:center;gap:16px;padding-block:20px;flex-wrap:wrap}
+.t-nav-sub{font-size:13px;color:var(--fg-3);font-weight:600}
+.t-nav .btn{margin-left:auto}
+.t-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:36px 56px}
+.t-copy h1{font-size:clamp(38px,5.4vw,66px);font-weight:900;line-height:1.12;letter-spacing:-.045em}
+.t-en{font-size:clamp(18px,2vw,24px);font-weight:800;margin-top:18px;letter-spacing:-.02em}
+.t-lead{margin-top:10px;font-size:16px;color:var(--fg-2);max-width:46ch;line-height:1.7}
+.t-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.t-note{display:flex;gap:6px;align-items:center;margin-top:14px;font-size:12.5px;color:var(--fg-3)}
+.t-note .ic{width:14px;height:14px}
+.art{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,.9fr);align-items:center;gap:8px}
+.art-folder{width:100%;max-width:340px;height:auto;filter:drop-shadow(0 18px 30px rgba(46,107,255,.22))}
+.art-arrow{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--accent);font-size:11.5px;font-weight:700}
+.art-arrow .ic{width:34px;height:34px}
+.art-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-2);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.ac-h{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ac-h b{font-size:14px}
+.ac-l{display:flex;flex-direction:column;gap:12px;position:relative}
+.ac-l::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--accent-line)}
+.ac-l li{position:relative;padding-left:20px}
+.ac-l i{position:absolute;left:0;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid var(--accent);background:var(--surface)}
+.ac-l small{display:block;font-size:11px;font-weight:700;color:var(--accent-ink)}
+.ac-l b{display:block;font-size:13px;line-height:1.4}
+.ac-f{font-size:11px;color:var(--fg-3);border-top:1px solid var(--line);padding-top:8px}
+.art-tags{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start;padding-left:10%}
+.art-tags span{font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--fg-2)}
+.t-sec{padding-block:44px;border-top:1px solid var(--line)}
+.t-sec-h{margin-bottom:22px}
+.t-sec-h h2{font-size:clamp(24px,3vw,32px);font-weight:800;line-height:1.3}
+.t-sec-h p{margin-top:8px;color:var(--fg-2);max-width:62ch}
+.t-gap{display:grid;grid-template-columns:minmax(0,.8fr) auto minmax(0,1.2fr);gap:18px;align-items:stretch}
+.gap-col{padding:22px;border-radius:18px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.gap-col h3{display:flex;align-items:center;gap:8px;font-size:16px}
+.gap-col h3 .ic{color:var(--fg-3)}
+.gap-col.lost{background:var(--accent-soft);border-color:var(--accent-line)}
+.gap-col.lost h3 .ic{color:var(--accent)}
+.gfiles{display:flex;flex-direction:column;gap:6px}
+.gfiles li{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--fg-2)}
+.gfiles .ic{width:15px;height:15px}
+.gap-col > p{font-size:13px;color:var(--fg-3)}
+.gap-mid{display:grid;place-items:center;color:var(--fg-3)}
+.gap-mid .ic{width:28px;height:28px}
+.lost-l{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lost-l li{padding:14px;border-radius:12px;background:var(--surface);display:flex;flex-direction:column;gap:3px}
+.lost-l b{font-size:14px;color:var(--accent-ink)}
+.lost-l span{font-size:12.5px;color:var(--fg-2)}
+.t-cause{margin-top:18px;font-size:15px;font-weight:600;color:var(--fg)}
+.t-cause small{display:block;margin-top:4px;font-size:11.5px;color:var(--fg-3);font-weight:500}
+.sg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.sgc{padding:18px;border-radius:18px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.sgc-h small{display:inline-block;font-size:11.5px;font-weight:800;color:var(--accent-ink);background:var(--accent-soft);padding:2px 8px;border-radius:6px}
+.sgc-h h3{font-size:18px;margin-top:8px}
+.sgc-h p{font-size:13px;color:var(--fg-2);margin-top:2px}
+.scr{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1px solid var(--line)}
+.scr:hover{border-color:var(--accent);background:var(--accent-soft)}
+.scr .si{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--surface-3);color:var(--fg-2);flex:none}
+.scr:hover .si{background:var(--accent);color:var(--on-accent)}
+.scr .st{flex:1;min-width:0}
+.scr b{display:block;font-size:13.5px}
+.scr small{display:block;font-size:12px;color:var(--fg-3)}
+.scr .tok{font-family:var(--mono);font-size:11px;color:var(--fg-3)}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;counter-reset:fl}
+.flow li{position:relative;padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.flow li::after{content:"";position:absolute;right:-11px;top:50%;width:10px;height:10px;border-top:2px solid var(--accent-line);border-right:2px solid var(--accent-line);transform:translateY(-50%) rotate(45deg);z-index:1}
+.flow li:last-child::after{display:none}
+.flow li:last-child{background:var(--accent-soft);border-color:var(--accent-line)}
+.fl-ic{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent)}
+.flow li:last-child .fl-ic{background:var(--accent);color:var(--on-accent)}
+.flow b{font-size:14px}
+.flow b::before{counter-increment:fl;content:counter(fl) ". ";color:var(--fg-3);font-weight:700}
+.flow p{font-size:12.5px;color:var(--fg-2)}
+.trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.trust span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--fg-2)}
+.trust .ic{width:15px;height:15px;color:var(--accent)}
+.t-foot{padding-block:28px;border-top:1px solid var(--line);font-size:12.5px;color:var(--fg-3);display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
+
+/* ---------- responsive ---------- */
+@media (max-width:1280px){
+  .sb{grid-template-columns:220px minmax(0,1fr)}
+  .sb-fb{grid-column:1/-1}
+  .tp{grid-template-columns:200px minmax(0,1fr)}
+  .tp-side{grid-column:1/-1}
+  .lesson{grid-template-columns:minmax(0,1fr) 320px}
+}
+@media (max-width:1100px){
+  .stage-grid{grid-template-columns:minmax(0,1fr)}
+  .wdoc{margin-right:0}
+  .fw{position:static;width:auto;margin-bottom:14px}
+  .fw-pill{float:none}
+  .ci,.cp{grid-template-columns:minmax(0,1fr)}
+  .ci-side{position:static}
+  .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow li::after{display:none}
+  .sg{grid-template-columns:minmax(0,1fr)}
+  .t-hero{grid-template-columns:minmax(0,1fr)}
+  .how{grid-template-columns:minmax(0,1fr) auto}
+  .how-steps{grid-column:1/2}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;left:0;top:0;bottom:0;width:min(280px,86vw);height:auto;transform:translateX(-102%);transition:transform .25s ease;box-shadow:var(--shadow-2);padding-top:calc(18px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none}
+  .scrim.open{display:block;position:fixed;inset:0;background:var(--scrim);z-index:35}
+  .menu{display:inline-grid}
+  .search{display:none}
+  .lesson,.rc,.rv{grid-template-columns:minmax(0,1fr)}
+  .chatp{position:static;max-height:none}
+  .t-gap{grid-template-columns:minmax(0,1fr)}
+  .gap-mid{transform:rotate(90deg)}
+}
+@media (max-width:760px){
+  .top{padding:0 16px}
+  .view{padding:16px 16px 140px}
+  .sb,.tp{grid-template-columns:minmax(0,1fr)}
+  .grid-2,.grid-3{grid-template-columns:minmax(0,1fr)}
+  .how{grid-template-columns:minmax(0,1fr) auto;gap:10px}
+  .frow{grid-template-columns:minmax(0,1fr)}
+  .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .result{grid-template-columns:minmax(0,1fr)}
+  .lost-l{grid-template-columns:minmax(0,1fr)}
+  .art{grid-template-columns:minmax(0,1fr)}
+  .art-arrow{transform:rotate(90deg)}
+  .art-tags{padding-left:0}
+  .tourbar{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:none;gap:6px;padding:6px 6px 6px 12px}
+  .tb-dots{display:none}
+  .tb-next span{max-width:44vw;overflow:hidden;text-overflow:ellipsis}
+  .tour{padding-inline:16px}
+  .fld{grid-template-columns:minmax(0,1fr)}
+  .fld label{padding-top:0}
+  .tf-bubble{margin-left:0}
+  .demo-pill{display:none}
+  .stage{padding:12px 12px 54px}
+  .kv{grid-template-columns:minmax(0,1fr)}
+  .flow{grid-template-columns:minmax(0,1fr)}
+  .ci-sum{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+.ax-row{margin-top:-2px}
+.ax{position:relative;height:16px;font-size:11px;color:var(--fg-3);font-family:var(--mono)}
+.ax span{position:absolute;top:0;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<div id="sheet-root"></div>
+<script>
+(() => {
+'use strict';
+
+/* ================= helpers ================= */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const I = {
+  home: '<path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+  book: '<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+  msg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
+  archive: '<rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
+  pointer: '<path d="m4 4 7 17 2.5-7.5L21 11z"/>',
+  chat: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
+  shieldOk: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+  moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  video: '<path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/>',
+  inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+  search: '<circle cx="11" cy="11" r="7.5"/><path d="m21 21-4.3-4.3"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  checkC: '<circle cx="12" cy="12" r="9.5"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+  circle: '<circle cx="12" cy="12" r="9.5"/>',
+  playC: '<circle cx="12" cy="12" r="9.5"/><path d="m10 8.5 5.5 3.5-5.5 3.5z"/>',
+  play: '<path d="m7 4 13 8-13 8z"/>',
+  chevR: '<path d="m9 18 6-6-6-6"/>', chevL: '<path d="m15 18-6-6 6-6"/>',
+  arrow: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+  send: '<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+  bulb: '<path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.1 14c.2-1 .7-1.7 1.4-2.5A4.7 4.7 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.4 2.5"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  eyeOff: '<path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/><path d="M10.7 5.1A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.7 2.7"/><path d="M6.6 6.6A13.5 13.5 0 0 0 2 12s3 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="m2 2 20 20"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  pause: '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
+  refresh: '<path d="M3 12a9 9 0 0 1 15.7-6L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.7 6L3 16"/><path d="M8 16H3v5"/>',
+  folder: '<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+  warn: '<path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  info: '<circle cx="12" cy="12" r="9.5"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  edit: '<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  sparkles: '<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>',
+  phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+  menu: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+  layers: '<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/>',
+  compass: '<circle cx="12" cy="12" r="9.5"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/>',
+  clip: '<path d="m21.4 11-9.2 9.2a6 6 0 0 1-8.5-8.5l8.6-8.6a4 4 0 0 1 5.7 5.7l-8.6 8.5a2 2 0 0 1-2.8-2.8l8.5-8.5"/>',
+  clock: '<circle cx="12" cy="12" r="9.5"/><path d="M12 7v5l3 2"/>',
+  server: '<rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01"/><path d="M7 17.5h.01"/>',
+  rec: '<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="4" fill="currentColor"/>',
+  undo: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+};
+const ic = (n, c = '') => `<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${I[n] || ''}</svg>`;
+const pill = (t, c = '') => `<span class="pill ${c}">${t}</span>`;
+const srcBtn = (k, label) => `<button class="src" data-act="src" data-k="${k}">${ic('link')}${label}</button>`;
+const logo = (s = 30) => `<svg class="logo" width="${s}" height="${s}" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" style="fill:var(--accent)"/><path d="M9 11.5h8.5a4.5 4.5 0 0 1 0 9H14" fill="none" style="stroke:var(--on-accent)" stroke-width="2.6" stroke-linecap="round"/><path d="M9 20.5h2" fill="none" style="stroke:var(--on-accent)" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+const fmtSec = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+const fmtDate = v => v ? v.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$1. $2. $3.') : '';
+
+function toast(msg, type = 'ok') {
+  const root = $('#toasts'); if (!root) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = ic(type === 'warn' ? 'warn' : type === 'info' ? 'info' : 'checkC') + `<span>${msg}</span>`;
+  root.appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+function sheet(title, body) {
+  $('#sheet-root').innerHTML = `<div class="sheet-bg" data-act="closeSheet"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><header><b>${title}</b><button class="icon-btn sm" data-act="closeSheet" aria-label="닫기">${ic('x')}</button></header><div class="sheet-body">${body}</div></div>`;
+  const b = $('#sheet-root .sheet button'); if (b) b.focus();
+}
+function closeSheet() { $('#sheet-root').innerHTML = ''; }
+
+/* ================= data (모두 시연용 가상 데이터) ================= */
+const SRC = {
+  '0388': { t: '협조 공문 복지정책과-2026-0388', meta: '2026.03.10 시행 · 전임자 B 기안 · 승인된 기록', body: '<p>1. 관련: 「국민기초생활 보장법」 제22조(신청에 의한 조사)</p><p>2. 귀 기관에서 우리 시로 전입한 수급 가구 <mark>[이름]</mark>의 수급 이력과 최근 소득·재산 조사 자료를 아래와 같이 요청하오니 회신하여 주시기 바랍니다.</p><p>가. 대상: 2026.02.27. 전입 1가구</p><p>나. 회신 기한: 2026.03.20.</p>' },
+  '0412': { t: '결재 문서 복지정책과-2026-0412', meta: '2026.03.24 결재 · 전임자 B · 승인된 기록', body: '<p>제목: 전입 수급 가구 자격 재판정 결과 보고</p><p>전 거주지 자료 회신 전, 확보한 금융재산 자료로 우선 산정함. 지역 구분이 바뀌어 전입지 기준 기본재산액을 다시 적용함.</p><p>판정 결과: 생계급여 유지, 급여액 일부 조정. 변경 사유와 이의신청 방법을 통지함.</p>' },
+  'guide3': { t: '○○시 기초생활보장 업무 지침 3장 (2026 개정)', meta: '적용 2026.01.01 ~ · 현행', body: '<p>3-2. 재산의 소득환산액은 재산가액에서 기본재산액과 부채를 뺀 금액에 소득환산율을 곱하여 산정한다.</p><p>3-4. 전입 가구는 전입지 기준 지역 구분을 적용한다.</p>' },
+  'notice': { t: '통지문 표준 문구 v2026', meta: '복지정책과 공용 · 승인된 기록', body: '<p>… 이 결정에 이의가 있는 경우 결정 통지를 받은 날부터 90일 이내에 ○○시를 거쳐 ○○도지사에게 서면 또는 구두로 이의신청을 할 수 있습니다.</p><p class="meta">근거: 「국민기초생활 보장법」 제38조</p>' },
+  'fee': { t: '○○시 제증명 수수료 조례 제5조 (가상)', meta: '적용 2026.01.01 ~ · 현행 규정', body: '<p>제5조(수수료의 면제) 다음 각 호의 어느 하나에 해당하는 사람이 본인의 제증명을 신청하는 경우에는 수수료를 면제한다.</p><p>1. 「국민기초생활 보장법」에 따른 수급자</p><p class="meta">대리 신청에 관한 규정은 없습니다.</p>' },
+  'fee921': { t: '결재 문서 복지정책과-2026-0921', meta: '2026.05.19 · 과거 처리 사례 (규정 아님)', body: '<p>수급자 가족이 위임장을 지참해 대리 신청한 건에 대해 수수료를 면제 처리함. 판단 근거는 기록되어 있지 않음.</p>' },
+  '0688': { t: '결재 문서 복지정책과-2026-0688', meta: '2026.07.02 결재 · 전임자 B · 승인된 기록', body: '<p>제목: 소득 변동 미신고 가구 급여 환수 결정</p><p>과지급 기간 3개월, 분할 납부 6회 승인. 이의신청 방법을 함께 안내함.</p>' },
+  'card': { t: '절차 카드 · 입찰공고 등록 (용역)', meta: '시연 기록 2026.08.21 · 개인정보 가림 처리 · 전임자 B 승인', body: '<p>1) 공고서 HWPX 첨부 (파일명에 공고번호)</p><p>2) 추정가격 확인 후 지역 제한 선택</p><p>3) 낙찰자 결정 방법 선택. 적격심사면 심사 기준표 첨부</p><p>4) 직접 확인 후 제출</p>' },
+};
+
+const WEEK_ITEMS = [
+  ['소득인정액 산정 기준', '부양의무자 기준 확인', '전입자 판정 사례 복습', '확인 퀴즈'],
+  ['급여 지급 일정과 결재 흐름', '변동 신고 반영 방법', '지급 오류 정정 사례', '확인 퀴즈'],
+  ['환수 결정 절차', '예외 처리 판단 기준', '감사 지적 대응 사례', '종합 모의 학습'],
+];
+const WEEKS = [
+  { n: 1, stage: '업무 개요 · 핵심 업무', t: '복지수급 자격 판정 기준', tags: ['결재 문서', '복지 지침'] },
+  { n: 2, stage: '정기 반복 절차', t: '분기별 급여 지급 절차', tags: ['결재 문서', '민원 내역'] },
+  { n: 3, stage: '예외 · 감사 대비', t: '부정수급 환수 및 예외 처리', tags: ['민원 내역', '복지 지침'] },
+];
+
+const LESSON = {
+  steps: [
+    { t: '전입 신고 확인과 자료 요청', d: '전 거주지 보장기관에 수급 이력과 조사 자료를 공문으로 요청합니다.', src: ['0388', '협조 공문 2026-0388'] },
+    { t: '전입지 기준으로 재산 재조사', d: '지역 구분에 따라 기본재산액이 달라지므로 전입지 기준으로 다시 환산합니다.', src: ['0412', '결재 문서 2026-0412'] },
+    { t: '소득인정액 재산정과 선정 기준 비교', d: '다시 계산한 소득인정액을 급여별 선정 기준과 비교해 자격과 급여액을 정합니다.', src: ['guide3', '업무 지침 3장 (2026)'] },
+    { t: '급여 결정 통지', d: '변경 사유와 함께 이의신청 방법과 기한(통지받은 날부터 90일)을 안내합니다.', src: ['notice', '통지문 표준 문구 v2026'] },
+  ],
+  quiz: [
+    { q: '다른 시·군에서 전입한 수급자의 재산을 다시 볼 때 먼저 확인할 것은?', o: ['전 거주지에서 받던 급여 금액', '전입지 기준의 지역별 기본재산액', '수급자 본인의 진술서'], a: 1, step: 1 },
+    { q: '전 거주지 조사 자료가 늦게 올 때 전임자는 어떻게 처리했나요?', o: ['자료가 올 때까지 판정을 미룬다', '받은 자료로 먼저 산정하고 차이가 생기면 정정한다', '이전 판정 결과를 그대로 유지한다'], a: 1, step: 0 },
+  ],
+};
+const LS_ANS = {
+  base: { x: '재산 금액에서 먼저 빼 주는 기본 공제액입니다. 지역 구분마다 금액이 달라서, 전입으로 지역 구분이 바뀌면 소득인정액도 달라질 수 있습니다.', src: [['guide3', '업무 지침 3장'], ['0412', '결재 2026-0412']] },
+  form: { x: '있습니다. 전임자가 쓴 협조 공문(2026-0388)을 양식으로 등록해 두었습니다. 문서 템플릿의 ‘업무 협조문’을 열면 수신 기관과 대상 항목이 미리 들어갑니다.', src: [['0388', '협조 공문 2026-0388']], link: ['templates', '업무 협조문 열기'] },
+  appeal: { x: '결정 통지를 받은 날부터 90일 이내에 시를 거쳐 도지사에게 이의신청할 수 있습니다. 통지문에 이 문구가 들어가 있는지 확인하세요.', src: [['notice', '통지문 표준 문구 v2026']] },
+  deadline: { need: true, x: '전입 가구 판정을 며칠 안에 마쳐야 하는지는 승인된 기록과 지침에서 찾지 못했습니다. 추정해서 답하지 않겠습니다.', q: '전입 후 며칠 안에 자격 판정을 마쳐야 하나요?' },
+  unknown: { need: true, x: '이 항목의 승인된 기록에서 근거를 찾지 못했습니다. 추정해서 답하지 않겠습니다.' },
+};
+const lsRoute = q => /기본\s*재산/.test(q) ? 'base' : /이의/.test(q) ? 'appeal' : /기한|며칠|언제|기간/.test(q) ? 'deadline' : /양식|공문/.test(q) ? 'form' : 'unknown';
+
+const SCN = {
+  s1: {
+    t: '수급 자격 탈락자 항의 전화', cat: '악성 민원', icon: 'phone', badge: '가상 통화', who: '민원인',
+    intro: '작년까지 생계급여를 받던 민원인이 탈락 통지를 받고 전화했습니다. 탈락 사유와 이후 절차를 안내하세요.',
+    law: '국민기초생활 보장법 · 수급자 선정 기준',
+    draft: '재산정은 주민센터에서 가능하며, 소득 변동이 있으시면 다시 조사해 드립니다.',
+    log: [
+      { w: 'them', x: '작년까지 받던 급여를 왜 갑자기 끊는 겁니까? 아무 설명도 없이 이러면 됩니까!' },
+      { w: 'me', x: '불편을 드려 죄송합니다. 국민기초생활 보장법에 따라 소득인정액이 선정 기준을 넘어 탈락 처리되었습니다. 재산정 절차를 안내해 드리겠습니다.' },
+      { w: 'them', x: '그럼 저는 이제 어떻게 해야 합니까? 다른 방법은 없어요?' },
+    ],
+    close: '알겠습니다. 90일 안에 이의신청을 해 보겠습니다.',
+    crit: [
+      { k: '탈락 사유 고지', test: t => /소득\s*인정액|선정\s*기준|탈락\s*사유|기준을?\s*(초과|넘)/.test(t), fix: '어떤 기준을 넘었는지 먼저 알려 주세요.', ref: '통지문 표준 문구 v2026' },
+      { k: '재산정 절차 안내', test: t => /재산정|재조사|다시\s*조사|변동\s*신고|재신청/.test(t), fix: '소득·재산이 바뀌면 다시 조사받을 수 있다고 안내하세요.', ref: '업무 지침 3장' },
+      { k: '이의신청 기한 안내', test: t => /이의\s*신청/.test(t) && /90\s*일|구십\s*일/.test(t), partial: t => /이의\s*신청/.test(t), fix: '결정 통지를 받은 날부터 90일 이내에 시를 거쳐 도지사에게 이의신청할 수 있다고 안내하세요.', partialFix: '이의신청은 안내했지만 기한(통지받은 날부터 90일)이 빠졌습니다.', ref: '「국민기초생활 보장법」 제38조' },
+    ],
+    hints: ['민원인이 ‘다른 방법’을 물었습니다. 결정에 동의하지 않을 때 밟을 수 있는 절차가 있나요?', '그 절차에는 기한이 있습니다. 결정 통지를 받은 날부터 며칠 이내인가요?'],
+    memo: '이의신청 기한을 먼저 알려 드리면 언성이 낮아지는 경우가 많았습니다.',
+    refs: ['탈락 안내 표준 문구', '이의신청 처리 절차 (B 주무관 정리)'],
+  },
+  s2: {
+    t: '상급 기관 감사 보정 요구', cat: '감사 대응', icon: 'file', badge: '가상 공문', who: '도 감사 담당',
+    intro: '도 감사에서 근거 서류 누락을 지적했습니다. 보정 계획을 회신하세요.',
+    law: '', draft: '',
+    log: [{ w: 'them', x: '2026년 2분기 생계급여 신규 결정 3건에서 소득 조사 근거 서류가 확인되지 않습니다. 보정 계획을 회신해 주십시오.' }],
+    close: '회신 내용을 확인했습니다. 보정 결과를 기한 안에 제출해 주십시오.',
+    crit: [
+      { k: '누락 사실 확인', test: t => /확인|조회|대조/.test(t), fix: '3건이 실제로 누락됐는지 원본과 대조해 확인하겠다고 밝히세요.' },
+      { k: '보정 기한 제시', test: t => /\d+\s*일|까지|기한|일정/.test(t), fix: '언제까지 보완할지 날짜나 기간을 적으세요.' },
+      { k: '재발 방지 조치', test: t => /재발|점검|체크리스트|방지/.test(t), fix: '같은 누락을 막을 점검 방법을 덧붙이세요.' },
+    ],
+    hints: ['감사 회신은 사실 확인, 보정 일정, 재발 방지 순서로 씁니다.', '전임자는 결정 전 ‘근거 서류 체크리스트’를 결재에 붙였습니다.'],
+    memo: '보정 기한은 실제로 지킬 수 있는 날짜로 적었습니다. 기한을 넘기면 다시 지적됩니다.',
+    refs: ['2025 도 감사 지적 회신 (B 주무관)', '결정 전 근거 서류 체크리스트'],
+  },
+  s3: {
+    t: '변동 신고 누락 환수', cat: '예외 처리', icon: 'warn', badge: '가상 면담', who: '수급자',
+    intro: '소득이 생긴 것을 신고하지 않아 환수 결정을 받은 수급자가 항의합니다.',
+    law: '', draft: '',
+    log: [{ w: 'them', x: '일을 조금 했다고 돈을 돌려내라니요. 신고해야 하는 줄 몰랐습니다.' }],
+    close: '분할 납부 상담부터 받아 보겠습니다.',
+    crit: [
+      { k: '환수 사유 설명', test: t => /변동\s*신고|신고\s*의무|소득.{0,4}(발생|생기|생긴)/.test(t), fix: '소득이 생기면 신고해야 한다는 의무와 환수 사유를 설명하세요.' },
+      { k: '납부 방법 안내', test: t => /분할|분납|납부/.test(t), fix: '한 번에 내기 어려우면 분할 납부를 상담할 수 있다고 안내하세요.' },
+      { k: '불복 경로 안내', test: t => /이의|불복|행정심판/.test(t), fix: '결정에 동의하지 않으면 이의신청할 수 있다고 알려 주세요.' },
+    ],
+    hints: ['감정이 격한 상황입니다. 사유를 설명한 뒤 바로 납부 방법을 붙여 보세요.', '분할 납부와 이의신청, 두 가지 선택지를 함께 알려 주면 좋습니다.'],
+    memo: '분할 납부 상담을 먼저 꺼내면 대화가 길어지지 않았습니다.',
+    refs: ['환수 결정 통지 문구', '분할 납부 승인 기안 (2026-0688)'],
+  },
+};
+
+const TPLS = [
+  { id: 'handover', t: '사무인계인수서', s: '인계 필수 · HWPX', g: '순환보직 인계 필수', target: '전보·휴직 시 담당자', rev: '2026.03 개정' },
+  { id: 'issues', t: '주요 현안 관리표', s: 'HWPX', g: '순환보직 인계 필수', target: '부서 공통', rev: '2025.11 개정' },
+  { id: 'coop', t: '업무 협조문', s: 'HWPX', g: '기타 양식', target: '기관 간 자료 요청', rev: '2026.01 개정' },
+  { id: 'draft', t: '결재 기안문', s: 'HWPX', g: '기타 양식', target: '전 부서', rev: '2025.07 개정' },
+];
+const FIELDS = [
+  { k: 'people', label: '인계자 · 인수자', src: '인사 발령 기록', date: '2026.10.01', auto: true },
+  { k: 'duty', label: '담당 업무', src: '담당 업무 분장 (결재 문서 2026)', date: '2026.09.30', auto: true },
+  { k: 'status', label: '업무 현황', src: '결재 이력 · 민원 접수 내역', date: '2026.10.10', auto: true },
+  { k: 'pending', label: '미결 과제', src: '주요 현안 관리표', date: '2026.10.10', auto: true },
+  { k: 'dept', label: '관계 부서', src: '협조 공문 수발신 기록', date: '2025.12.18', auto: true, stale: true },
+  { k: 'docs', label: '주요 문서', src: '문서 등록 대장', date: '2026.09.30', auto: true },
+  { k: 'date', label: '인계 일자', src: '직접 입력', date: '', auto: false },
+];
+
+let RECORDS = [
+  { id: 'r1', type: '처리 사례', t: '전입 수급 가구 자격 재판정', prob: '다른 시·군에서 전입한 수급 가구의 자격을 다시 판정해야 함', why: '지역 구분이 바뀌면 기본재산액이 달라져 소득인정액이 바뀜', how: ['전 거주지 보장기관에 조사 자료 요청', '받은 자료로 먼저 산정', '전입지 기준 기본재산액 적용', '변경 사유와 이의신청 방법을 함께 통지'], exc: '전 거주지 자료가 늦어도 판정을 미루지 않고, 차이가 생기면 정정', src: [['0388', '협조 공문 2026-0388'], ['0412', '결재 2026-0412']], dept: '복지정책과 기초생활보장', rev: '2026.09.30', acl: '기초생활보장 담당' },
+  { id: 'r2', type: '민원 대응', t: '탈락 통지 후 항의 전화', prob: '탈락 통지를 받은 민원인이 설명 없이 끊었다며 항의', why: '통지문만으로는 어떤 기준을 넘었는지 알기 어려움', how: ['넘은 기준(소득인정액)을 먼저 설명', '소득·재산이 바뀌면 다시 조사받을 수 있음을 안내', '이의신청 기한(통지받은 날부터 90일) 안내'], exc: '폭언이 계속되면 응대 중단을 알리고 팀장에게 보고', src: [['notice', '통지문 표준 문구 v2026']], dept: '복지정책과', rev: '2026.08.12', acl: '복지정책과 전체' },
+  { id: 'r3', type: '규정·지침', t: '재산의 소득환산 기준', prob: '재산을 소득으로 바꿔 계산하는 기준', why: '지침이 해마다 개정되어 옛 기준을 쓰면 판정이 틀어짐', how: ['재산가액에서 기본재산액과 부채를 뺌', '소득환산율을 곱함', '전입 가구는 전입지 지역 구분 적용'], exc: '2025 지침은 2025.12.31로 효력이 끝나 답변에 쓰지 않음', src: [['guide3', '업무 지침 3장 (2026)']], dept: '복지정책과', rev: '2026.01.05', acl: '복지정책과 전체', versions: true },
+  { id: 'r4', type: '절차 카드', t: '입찰공고 등록 (용역)', prob: '업무관리시스템에서 인쇄·용역 입찰공고를 올리는 순서', why: '메뉴가 깊고 필수 첨부가 단계마다 달라 반려가 잦음', how: ['공고서 HWPX 첨부 (파일명에 공고번호)', '추정가격 확인 후 지역 제한 선택', '낙찰자 결정 방법 선택, 적격심사면 심사 기준표 첨부', '직접 확인 후 제출'], exc: '추정가격이 기관 기준 금액 이상이면 지역 제한을 걸지 않음', src: [['card', '시연 기록 2026.08.21']], dept: '복지정책과', rev: '2026.08.21', acl: '계약 업무 담당' },
+  { id: 'r5', type: '처리 사례', t: '변동 신고 누락 환수 결정', prob: '소득 발생을 신고하지 않아 과지급된 급여의 환수', why: '신고 의무를 몰랐다는 항의가 많아 설명 순서가 중요함', how: ['과지급 기간과 금액 산정', '환수 결정 통지', '분할 납부 상담 안내', '이의신청 경로 안내'], exc: '생계가 어려우면 분할 납부 기간 연장을 검토', src: [['0688', '결재 2026-0688']], dept: '복지정책과', rev: '2026.07.02', acl: '기초생활보장 담당' },
+  { id: 'r6', type: '민원 대응', t: '제증명 수수료 면제 문의', prob: '수급자의 등본 발급 수수료 면제 여부', why: '본인 신청과 대리 신청의 적용이 다름', how: ['수급자 증명으로 자격 확인', '본인 신청이면 조례에 따라 면제'], exc: '대리 신청은 조례에 규정이 없어 담당자 확인 필요', src: [['fee', '수수료 조례 제5조'], ['fee921', '복지정책과-2026-0921']], dept: '민원 공통', rev: '2026.05.19', acl: '복지정책과 전체' },
+  { id: 'r7', type: '규정·지침', t: '인사 관련 기록', locked: true, acl: '인사 담당만 열람' },
+];
+
+const GSTEPS = [
+  { k: 'file', t: '공고서 첨부', src: '절차 카드 1단계' },
+  { k: 'region', t: '지역 제한 확인', src: '절차 카드 · 예외 조건' },
+  { k: 'method', t: '낙찰자 결정 방법 확인', src: '절차 카드 3단계' },
+  { k: 'submit', t: '최종 확인 후 제출', src: '안내 원칙' },
+];
+const REGION_LIMIT = 100000000;
+
+const FILES = [
+  { id: 'f1', n: '2026_4분기_생계급여_지급계획.hwpx', k: 'hwpx', folder: '급여지급', cls: '업무 문서', c: 'blue', rec: 'approve', why: '결재가 끝난 업무 문서이고 개인정보가 없습니다.', ex: '2026년 4분기 생계급여 정기 지급 계획. 지급일 10.20, 대상 1,212가구, 변동 반영 마감 10.15.' },
+  { id: 'f2', n: '수급자_변동신고_처리결과_1011.xlsx', k: 'xlsx', folder: '변동신고', cls: '개인정보 포함', c: 'risk', pii: '주민등록번호 4 · 연락처 8', rec: 'mask', why: '처리 결과는 인계에 필요하지만 개인정보가 12건 들어 있습니다.', ex: [['수급자 ', null], ['박○○', '이름'], [' (', null], ['7105xx-2xxxxxx', '주민등록번호'], [') 연락처 ', null], ['010-xxxx-1182', '연락처'], [' · 근로소득 발생 신고(9월) → 소득인정액 재산정, 10월 급여 조정', null]] },
+  { id: 'f3', n: '이의신청_검토의견_김○○.hwp', k: 'hwp', folder: '이의신청', cls: '개인정보 포함', c: 'risk', pii: '이름 3 · 주소 1', rec: 'mask', why: '검토 논리는 남겨야 하지만 신청인 정보는 가려야 합니다.', ex: [['이의신청인 ', null], ['김○○', '이름'], ['(', null], ['○○시 ○○로 12', '주소'], [')은 재산 환산 결과에 이의를 제기함. 검토 결과 금융재산 중복 반영을 확인해 재산정함.', null]] },
+  { id: 'f4', n: '도감사_보정요청_회신(안).hwpx', k: 'hwpx', folder: '감사', cls: '결재 전 초안', c: 'warn', rec: 'hold', why: '결재 전 초안입니다. 결재가 끝난 뒤 등록하는 편이 안전합니다.', ex: '도 감사 보정 요청 회신(안). 근거 서류 누락 3건 원본 대조, 10.24까지 보완 예정. (결재 전)' },
+  { id: 'f5', n: '주민센터_협조회의_메모.txt', k: 'txt', folder: '회의', cls: '업무 문서', c: 'blue', rec: 'approve', why: '업무 협의 내용이고 개인정보가 없습니다.', ex: '주민센터 맞춤형복지팀 협조회의. 변동 신고 안내문 배포 일정 합의(10.14), 담당 창구 일원화.' },
+  { id: 'f6', n: '개인_연말정산_자료.pdf', k: 'pdf', folder: '다운로드', cls: '비업무 의심', c: '', rec: 'exclude', why: '업무와 관련 없는 개인 자료로 보입니다.', ex: '2025 귀속 연말정산 간소화 자료 …' },
+  { id: 'f7', n: '인사_평정_의견서.hwpx', k: 'hwpx', folder: '기타', cls: '기밀 의심 (인사)', c: 'risk', rec: 'exclude', why: '인사 기밀 문서는 지식 저장소에 등록하지 않습니다.', hidden: true },
+];
+const DEC = [['approve', '승인'], ['mask', '가림 후 승인'], ['hold', '보류'], ['exclude', '제외']];
+
+const FRAMES = [
+  { t: '입찰공고 등록 메뉴 진입', act: '[계약] 메뉴 → [입찰공고 등록]', row: 0, masks: 0 },
+  { t: '공고서 첨부', act: '[파일 선택] → 공고서 HWPX 첨부', row: 1, masks: 1, note: '담당자 이름 1 가림' },
+  { t: '지역 제한 선택', act: '[지역 제한] 목록 → ○○시', row: 2, masks: 0 },
+  { t: '낙찰자 결정 방법', act: '[적격심사] 선택 → 심사 기준표 첨부', row: 3, masks: 2, note: '사업자등록번호 1 · 계좌번호 1 가림' },
+];
+
+let REVIEWS = [
+  { id: 'q2', q: '감사 보정 회신은 어떤 양식으로 보내나요?', from: '모의 학습 · 감사 보정 요구', when: '10.09 11:20', found: '2025 회신 문서 1건이 있지만 양식이 정해져 있지 않습니다.', st: 'open' },
+  { id: 'q4', q: '분기 확인조사 대상은 어떤 기준으로 고르나요?', from: '내 커리큘럼 · 2주차 예습', when: '10.10 09:15', found: '지침에 기준은 있으나 전임자의 우선순위 판단 기록이 없습니다.', st: 'open' },
+  { id: 'q3', q: '변동 신고 일괄 반영은 매달 며칠에 하나요?', from: '업무 기록 검색', when: '10.08 09:42', found: '결재 이력에서 매월 20일 전후 반영 3건을 찾았습니다.', st: 'answered', a: '매월 20일에 반영하고, 지급일 5일 전까지 결재를 마칩니다.' },
+];
+
+const HOW = {
+  home: { why: '인계 9일차 후임자가 오늘 이어서 할 일을 한 화면에서 봅니다.', steps: ['‘이어서 학습’ 열기', '전임자 참여 상태 바꿔 보기', '현장 업무 도구 실행'] },
+  curriculum: { why: '전임자 2개년 결재 기록을 담당 업무에 맞춘 3주 과정으로 바꿉니다.', steps: ['1주차 진행 중 항목 고르기', '처리 사례 카드 열기', '‘1주차 이어서 학습’'] },
+  lesson: { why: '자료를 열었다고 이수되지 않습니다. 묻고, 이해를 확인해야 다음 단계로 갑니다.', steps: ['처리 순서의 출처 열기', '오른쪽 추천 질문 누르기', '이해 확인 문제 풀기'] },
+  sandbox: { why: '실제 민원 전에, 과거에 있었던 민원을 연습 화면에서 먼저 겪어 봅니다.', steps: ['답변에 이의신청 안내 덧붙이기', '‘수정해서 다시 제출’', '오른쪽 체크리스트 확인'] },
+  templates: { why: '인계서 빈칸을 기록에서 찾아 채우고, 빠진 값은 지어내지 않고 표시합니다.', steps: ['오른쪽 항목 눌러 출처 확인', '‘HWPX 다운로드’로 누락 점검', '인계 일자 입력 후 다시 점검'] },
+  records: { why: '답변과 학습에는 전임자가 승인한 기록, 그리고 지금 적용되는 규정만 쓰입니다.', steps: ['기록 카드 고르기', '규정 적용 기간 확인', '권한 없는 기록 확인'] },
+  guide: { why: '낯선 행정 시스템 화면 위에서, 지금 입력할 칸만 짚어 줍니다.', steps: ['파란 테두리 칸 입력', '말풍선의 ‘확인 완료’', '추정가격을 바꿔 다시 확인 표시 보기'] },
+  widget: { why: '작업 창을 떠나지 않고 묻고, 근거를 확인한 뒤 문서에 넣습니다.', steps: ['추천 질문 누르기', '‘문서에 반영’으로 문장 추가', '‘대리 신청도 같은가?’ 이어 묻기'] },
+  alert: { why: '감사에 걸리기 쉬운 작업을 실행 직전에 알리고, 고칠 곳을 안내합니다.', steps: ['저장 창의 ‘저장’ 누르기', '경고에서 암호·저장 위치 고치기', '‘다시 점검’ 누르기'] },
+  checkin: { why: '퇴근 전 2분, 오늘 만든 문서 중 넘길 것만 고릅니다. 원문 파일은 PC에 남습니다.', steps: ['문서별 권장 처리 확인', '개인정보 가림 미리보기', '‘검사 완료’ 누르기'] },
+  capture: { why: '선임자의 화면 시연을, 개인정보를 가린 절차 카드로 만듭니다.', steps: ['프레임을 넘겨 가림 처리 확인', '절차 카드 예외 조건 고치기', '‘승인’ 후 후임자 화면에서 보기'] },
+  review: { why: '기록에 없는 질문만 선임자에게 옵니다. 답하면 다음 후임자의 기록이 됩니다.', steps: ['요청 고르기', '근거와 함께 답변 쓰기', '‘답변하고 기록에 추가’'] },
+};
+const TOUR = [['curriculum', '맞춤 커리큘럼'], ['lesson', '사례 학습·질문'], ['sandbox', '모의 민원 연습'], ['templates', '인계서 자동 채우기'], ['guide', '화면 단계 안내'], ['widget', '질문 위젯'], ['alert', '위험 작업 경고'], ['checkin', '퇴근 전 검사'], ['capture', '시연 기록'], ['review', '확인 요청함']];
+const CRUMB = { home: ['홈'], curriculum: ['학습', '내 커리큘럼'], lesson: ['학습', '내 커리큘럼', '1주차'], sandbox: ['학습', '모의 학습', '샌드박스'], templates: ['문서', '규격 문서 템플릿'], records: ['기록', '업무 기록'], guide: ['현장 업무', '화면 단계 안내'], widget: ['현장 업무', '질문 위젯'], alert: ['현장 업무', '위험 작업 경고'], checkin: ['선임자', '퇴근 전 검사'], capture: ['선임자', '시연 기록'], review: ['선임자', '확인 요청함'] };
+const SENIOR = ['checkin', 'capture', 'review'];
+
+/* ================= state ================= */
+const S = {
+  how: {}, sideOpen: false, present: true, callSec: 192, timers: [], focus: null,
+  cur: { done: [true, true, false, false] },
+  ls: { ans: {}, checked: false, passed: false, weak: null, chat: [{ w: 'me', x: '지역별 기본재산액이 뭔가요?' }, { w: 'bot', k: 'base' }] },
+  sb: {
+    active: 's1',
+    s1: { answer: SCN.s1.draft, law: SCN.s1.law, submitted: true, hint: 0, done: false },
+    s2: { answer: '', law: '', submitted: false, hint: 0, done: false },
+    s3: { answer: '', law: '', submitted: false, hint: 0, done: false },
+  },
+  tpl: {
+    active: 'handover', sel: 'pending', status: 'draft', issues: null, conf: { dept: false },
+    v: { people: ['복지정책과 주무관 B', '복지정책과 주무관 A'], duty: '기초생활보장 수급 자격 관리, 급여 지급', status: '정기 급여 지급 진행, 변동 신고 처리 대기 13건', pending: '부정수급 환수 2건 진행, 이의신청 1건 검토 중', dept: '주민센터 맞춤형복지팀, 감사담당관, 예산팀', docs: '수급자 관리 대장, 환수 결정 문서철', date: '' },
+  },
+  rec: { f: '전체', q: '', a: 'r1' },
+  g: { step: 0, st: ['now', 'todo', 'todo', 'todo'], v: { file: '', region: '', method: '', crit: '', price: '18,000,000' }, paused: false, fail: false, manual: false, mc: [false, false, false, false], submitted: false, early: '' },
+  w: { open: true, msgs: [{ w: 'bot', k: 'intro' }], pend: false, inserted: false, phase: 'start', reqd: false },
+  al: { dlg: true, fname: '수급자_명단_2026_전체.xlsx', folder: 'desk', pw: false, pwv: '', warned: false, checked: false, closed: false, fp: false, fpSent: false, saved: false, reqd: false, hl: '' },
+  ci: { d: { f1: 'approve' }, a: 'f2', masked: false, done: false },
+  cp: { frame: 1, recording: false, recIdx: 4, approved: false, ex: '추정가격이 기관 기준 금액 이상이면 지역 제한을 걸지 않습니다.' },
+  rv: { a: 'q2', draft: {}, basis: {} },
+};
+
+function clearTimers() { S.timers.forEach(t => clearInterval(t)); S.timers = []; }
+const every = (fn, ms) => S.timers.push(setInterval(fn, ms));
+const later = (fn, ms) => S.timers.push(setTimeout(fn, ms));
+
+/* ================= shell ================= */
+const route = () => { const h = location.hash.replace('#', ''); return (h === 'tour' || CRUMB[h]) ? h : 'tour'; };
+const isSenior = r => SENIOR.includes(r);
+const openReviews = () => REVIEWS.filter(r => r.st === 'open').length;
+const pendingFiles = () => S.ci.done ? 0 : FILES.filter(f => !S.ci.d[f.id]).length;
+
+function navHTML(r) {
+  const J = [
+    { g: '사전 학습', items: [['home', '홈', 'home'], ['curriculum', '내 커리큘럼', 'book'], ['sandbox', '모의 학습', 'msg'], ['templates', '문서 템플릿', 'file'], ['records', '업무 기록', 'archive']] },
+    { g: '현장 업무 · 실시간', items: [['guide', '화면 단계 안내', 'pointer'], ['widget', '질문 위젯', 'chat'], ['alert', '위험 작업 경고', 'shield']] },
+  ];
+  const Sn = [{ g: '기록 남기기', items: [['checkin', '퇴근 전 검사', 'moon', pendingFiles()], ['capture', '시연 기록', 'video'], ['review', '확인 요청함', 'inbox', openReviews()]] }];
+  const groups = isSenior(r) ? Sn : J;
+  const act = r === 'lesson' ? 'curriculum' : r;
+  return groups.map(g => `<div class="nav-g">${g.g}</div>` + g.items.map(([k, t, i, b]) => `<a href="#${k}" class="${act === k ? 'on' : ''}" ${act === k ? 'aria-current="page"' : ''}>${ic(i)}<span>${t}</span>${b ? `<span class="badge">${b}</span>` : ''}</a>`).join('')).join('');
+}
+
+function howHTML(r) {
+  const h = HOW[r]; if (!h) return '';
+  if (S.how[r]) return `<button class="how-mini" data-act="showHow">${ic('compass')}체험 방법 보기</button>`;
+  return `<section class="how" aria-label="체험 방법"><div class="how-why"><span class="how-tag">이 화면</span><p>${h.why}</p></div><ol class="how-steps">${h.steps.map((s, i) => `<li><b>${i + 1}</b>${s}</li>`).join('')}</ol><button class="icon-btn sm" data-act="dismissHow" aria-label="체험 방법 접기">${ic('x')}</button></section>`;
+}
+
+function tourbar(r) {
+  const i = TOUR.findIndex(t => t[0] === r);
+  if (i < 0) return `<nav class="tourbar" aria-label="체험 순서"><span class="tb-k">체험 순서</span><a class="tb-next" href="#curriculum"><span>처음부터: 맞춤 커리큘럼</span>${ic('arrow')}</a></nav>`;
+  const prev = TOUR[i - 1], next = TOUR[i + 1];
+  return `<nav class="tourbar" aria-label="체험 순서"><span class="tb-k">체험 ${i + 1}/${TOUR.length}</span><div class="tb-dots">${TOUR.map((t, j) => `<a href="#${t[0]}" class="${j === i ? 'on' : j < i ? 'past' : ''}" aria-label="${t[1]}" title="${t[1]}"></a>`).join('')}</div>${prev ? `<a class="tb-prev" href="#${prev[0]}">${ic('chevL')}<span>이전</span></a>` : ''}${next ? `<a class="tb-next" href="#${next[0]}"><span>다음: ${next[1]}</span>${ic('arrow')}</a>` : `<a class="tb-next" href="#tour"><span>체험 마침 · 처음으로</span>${ic('arrow')}</a>`}</nav>`;
+}
+
+function shell(r) {
+  const sen = isSenior(r);
+  const crumb = CRUMB[r].map((c, i, a) => i === a.length - 1 ? `<b>${c}</b>` : `<span>${c}</span>${ic('chevR')}`).join('');
+  return `<div class="app">
+  <aside class="side ${S.sideOpen ? 'open' : ''}" aria-label="주 메뉴">
+    <a class="brand" href="#tour">${logo()}<span>TacitFlow <em>AI</em></span></a>
+    <div class="seg" role="group" aria-label="사용자 모드">
+      <button data-act="mode" data-v="junior" class="${sen ? '' : 'on'}" aria-pressed="${!sen}">후임자</button>
+      <button data-act="mode" data-v="senior" class="${sen ? 'on' : ''}" aria-pressed="${sen}">선임자</button>
+    </div>
+    <nav class="nav">${navHTML(r)}</nav>
+    <div class="side-foot">
+      <a class="side-guide" href="#tour">${ic('compass')}체험 안내 처음으로</a>
+      <div class="me">${sen ? `<span class="av b">B</span><div><b>주무관 B</b><small>회계과 전보 · 전임 담당자</small></div>` : `<span class="av">A</span><div><b>신임 주무관 A</b><small>복지정책과 · 기초생활보장</small></div>`}</div>
+    </div>
+  </aside>
+  <div class="scrim ${S.sideOpen ? 'open' : ''}" data-act="closeSide"></div>
+  <div class="main">
+    <header class="top">
+      <button class="icon-btn menu" data-act="openSide" aria-label="메뉴 열기">${ic('menu')}</button>
+      <div class="crumb">${crumb}</div>
+      <label class="search">${ic('search')}<span class="sr">검색</span><input id="q" data-enter="search" placeholder="문서, 판례, 키워드 검색" autocomplete="off"></label>
+      <span class="demo-pill">시연용 가상 데이터</span>
+      <button class="icon-btn" data-act="bell" aria-label="알림">${ic('bell')}<i class="dot"></i></button>
+      <span class="av sm ${sen ? 'b' : ''}">${sen ? 'B' : 'A'}</span>
+    </header>
+    <main class="view" id="view">${howHTML(r)}${VIEWS[r]()}</main>
+  </div>
+</div>${tourbar(r)}`;
+}
+
+let lastRoute = null;
+function render() {
+  const r = route();
+  clearTimers();
+  const changed = r !== lastRoute;
+  if (changed) { S.sideOpen = false; closeSheet(); }
+  const y = window.scrollY;
+  $('#root').innerHTML = r === 'tour' ? vTour() : shell(r);
+  window.scrollTo(0, changed ? 0 : y);
+  lastRoute = r;
+  if (AFTER[r]) AFTER[r]();
+}
+const update = render;
+const go = r => { if (location.hash === '#' + r) render(); else location.hash = r; };
+
+/* ================= tour (landing) ================= */
+function heroArt() {
+  return `<div class="art" aria-hidden="true">
+  <svg class="art-folder" viewBox="0 0 360 300">
+    <defs>
+      <linearGradient id="afBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--art-1)"/><stop offset="1" style="stop-color:var(--art-2)"/></linearGradient>
+      <linearGradient id="afFront" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--art-3);stop-opacity:.9"/><stop offset="1" style="stop-color:var(--art-2);stop-opacity:.86"/></linearGradient>
+    </defs>
+    <path d="M58 52h66q8 0 13 6l12 14h153q16 0 16 16v164q0 16-16 16H58q-16 0-16-16V68q0-16 16-16z" fill="url(#afBack)"/>
+    <g transform="rotate(-9 150 130)"><rect x="78" y="34" width="150" height="180" rx="10" style="fill:var(--art-paper)"/><path d="M98 64h80M98 84h108M98 104h96M98 124h104" style="stroke:var(--art-line)" stroke-width="7" stroke-linecap="round"/></g>
+    <g transform="rotate(7 210 130)"><rect x="150" y="44" width="150" height="176" rx="10" style="fill:var(--art-paper)"/><path d="M170 76h90M170 96h108M170 116h70" style="stroke:var(--art-line)" stroke-width="7" stroke-linecap="round"/></g>
+    <path d="M44 134q0-14 14-14h244q14 0 14 14l-8 118q-1 16-17 16H69q-16 0-17-16z" fill="url(#afFront)"/>
+    <path d="M60 124h240" style="stroke:var(--art-hi)" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+  </svg>
+  <div class="art-arrow"><span>자동 요약</span>${ic('arrow')}</div>
+  <div class="art-card">
+    <div class="ac-h"><b>3주 맞춤 커리큘럼</b>${pill('자동 편성', 'blue')}</div>
+    <ol class="ac-l">${WEEKS.map(w => `<li><i></i><small>${w.n}주차</small><b>${w.t}</b></li>`).join('')}</ol>
+    <p class="ac-f">복지정책과 기초생활보장 담당 · 전임자 B 기록 기반</p>
+  </div>
+  <div class="art-tags"><span>결재 문서 2개년</span><span>민원 접수 내역</span><span>지자체 복지 지침</span></div>
+</div>`;
+}
+function vTour() {
+  const groups = [
+    { g: '사전 직무 학습', k: '정적 · 후임자', d: '첫 출근 전후, 업무를 미리 익힙니다.', items: [['curriculum', 'book', '맞춤 커리큘럼', '2개년 결재 기록을 3주 과정으로'], ['lesson', 'sparkles', '사례 학습·질문', '근거를 붙여 답하고, 모르면 확인 요청'], ['sandbox', 'msg', '모의 민원 연습', '과거 민원을 연습하고 기준별 피드백'], ['templates', 'file', '인계서 자동 채우기', 'HWPX 빈칸을 기록에서 채우고 누락 점검'], ['records', 'archive', '업무 기록', '승인된 기록과 규정 적용 기간']] },
+    { g: '현장 업무 보조', k: '실시간 · 후임자', d: '실제 업무 화면 위에서 돕습니다.', items: [['guide', 'pointer', '화면 단계 안내', '낯선 시스템에서 지금 입력할 칸 표시'], ['widget', 'chat', '질문 위젯', '작업 창을 떠나지 않고 묻고 근거 확인'], ['alert', 'shield', '위험 작업 경고', '감사에 걸리기 쉬운 작업을 실행 직전 경고']] },
+    { g: '기록 남기기', k: '선임자', d: '평소 업무가 다음 후임자의 교재가 됩니다.', items: [['checkin', 'moon', '퇴근 전 검사', '넘길 문서만 고르고 개인정보는 가림'], ['capture', 'video', '시연 기록', '화면 시연을 절차 카드로'], ['review', 'inbox', '확인 요청함', '기록에 없는 질문에 답하면 기록이 됨']] },
+  ];
+  return `<div class="tour">
+  <header class="t-nav"><a class="brand" href="#tour">${logo()}<span>TacitFlow <em>AI</em></span></a><span class="t-nav-sub">2026 AI·창업 아이디어 경진대회 · 인터랙티브 프로토타입</span><a class="btn" href="#home">${ic('grid')}앱 바로 열기</a></header>
+  <section class="t-hero">
+    <div class="t-copy">
+      <span class="eyebrow">공공기관 순환보직 인수인계 AI</span>
+      <h1>선임자의 노하우를<br>후임자의 화면 위로</h1>
+      <p class="t-en">Tacit Knowledge, Handed Over</p>
+      <p class="t-lead">1~2년마다 담당자가 바뀌어도 일의 맥락은 남도록. 전임자의 승인된 기록으로 학습 과정을 만들고, 실제 업무 화면 위에서 다음 단계와 위험을 알려 줍니다.</p>
+      <div class="t-cta"><a class="btn primary lg" href="#curriculum">처음부터 체험하기${ic('arrow')}</a><button class="btn lg" data-act="scrollTo" data-id="screens">기능별로 골라 보기</button></div>
+      <p class="t-note">${ic('info')}화면 속 기관·인물·문서·조례는 모두 시연용 가상 데이터입니다.</p>
+    </div>
+    ${heroArt()}
+  </section>
+
+  <section class="t-sec">
+    <div class="t-sec-h"><span class="eyebrow">왜 필요한가</span><h2>인사이동 날, 후임자에게 남는 것</h2></div>
+    <div class="t-gap">
+      <div class="gap-col"><h3>${ic('folder')}넘겨받는 것</h3>
+        <ul class="gfiles"><li>${ic('file')}기안_수급자격_2025-0412.hwp</li><li>${ic('file')}결재_환수결정_2026-0688.hwpx</li><li>${ic('file')}민원처리대장_2026.xlsx</li><li>${ic('file')}업무지침_2026개정.pdf</li></ul>
+        <p>과거 기안문과 흩어진 공문 파일</p></div>
+      <div class="gap-mid">${ic('arrow')}</div>
+      <div class="gap-col lost"><h3>${ic('user')}선임자의 머릿속에만 남는 것</h3>
+        <ul class="lost-l"><li><b>조례·지침 해석의 맥락</b><span>왜 그렇게 판단했는가</span></li><li><b>민원·갈등 때의 예외 대응</b><span>기록되지 않은 처리 요령</span></li><li><b>결재 시스템 조작 순서</b><span>메뉴 위치와 필수 입력값</span></li><li><b>감사 지적과 피하는 방법</b><span>다시 걸리지 않는 절차</span></li></ul></div>
+    </div>
+    <p class="t-cause">그래서 후임자는 기록과 사람을 찾아다니고, 선임자는 같은 설명을 되풀이하느라 자기 업무를 멈춥니다.<small>Levallet &amp; Chan (2019), Journal of Knowledge Management · Fagerholm et al. (2014), IEEE TSE</small></p>
+  </section>
+
+  <section class="t-sec" id="screens">
+    <div class="t-sec-h"><span class="eyebrow">직접 눌러 보기</span><h2>두 갈래 인수인계, 11개 화면</h2><p>사전 학습으로 업무를 익히고, 현장에서는 실제 업무 화면 위에서 도움을 받습니다. 이 모든 것은 선임자가 평소 남긴 기록에서 나옵니다.</p></div>
+    <div class="sg">${groups.map(g => `<div class="sgc"><div class="sgc-h"><small>${g.k}</small><h3>${g.g}</h3><p>${g.d}</p></div>${g.items.map(([k, i, t, d]) => `<a class="scr" href="#${k}"><span class="si">${ic(i)}</span><span class="st"><b>${t}</b><small>${d}</small></span><span class="tok">#${k}</span></a>`).join('')}</div>`).join('')}</div>
+  </section>
+
+  <section class="t-sec">
+    <div class="t-sec-h"><span class="eyebrow">작동 방식</span><h2>기록이 학습과 현장 안내가 되기까지</h2></div>
+    <ol class="flow">
+      <li><span class="fl-ic">${ic('folder')}</span><b>선임자 기록</b><p>PC 문서, 결재 이력, 업무 화면 시연</p></li>
+      <li><span class="fl-ic">${ic('eyeOff')}</span><b>퇴근 전 검사</b><p>비업무·기밀 자료는 빼고 개인정보는 가림</p></li>
+      <li><span class="fl-ic">${ic('shieldOk')}</span><b>선임자 승인</b><p>승인한 기록만 다음 단계로</p></li>
+      <li><span class="fl-ic">${ic('server')}</span><b>내부망 지식 저장소</b><p>출처, 적용일, 열람 권한을 함께 저장</p></li>
+      <li><span class="fl-ic">${ic('users')}</span><b>후임자</b><p>사전 학습: 커리큘럼·모의 연습·HWPX<br>현장 업무: 화면 안내·질문·위험 경고</p></li>
+    </ol>
+    <div class="trust"><span>${ic('lock')}폐쇄망 온프레미스 설치</span><span>${ic('server')}원문 파일은 PC에, 승인한 내용만 내부 서버로</span><span>${ic('layers')}기관 데이터로 AI 모델을 학습시키지 않음</span><span>${ic('info')}근거가 없으면 ‘확인 필요’로 남김</span></div>
+  </section>
+  <footer class="t-foot"><span>팀 TacitFlow · 2026 AI·창업 아이디어 경진대회 출품작</span><span>프로토타입이며 실제 기관 시스템과 연결되어 있지 않습니다.</span></footer>
+</div>`;
+}
+
+/* ================= junior: home ================= */
+function vHome() {
+  const d = S.cur.done, n = d.filter(Boolean).length;
+  const s1 = S.sb.s1, sc1 = s1.submitted ? evalScn('s1').filter(x => x === 'ok').length : 0;
+  const tplAuto = FIELDS.filter(f => f.auto).length;
+  return `<div class="ph"><div><span class="eyebrow">인수인계 9일차 · 2026.10.11</span><h1>안녕하세요, 신임 주무관 A님</h1><p>도로과에서 복지정책과 기초생활보장 업무로 왔습니다. 전임자 B 주무관의 승인된 기록 1,460건으로 학습 과정을 만들었습니다.</p></div><div class="acts"><a class="btn primary" href="#lesson">${ic('play')}이어서 학습</a></div></div>
+  <div class="grid-3">
+    <article class="card pad hc hl"><span class="k">이어서 학습 · 1주차</span><h3>${d[2] ? '1주차 확인 퀴즈' : '전입자 판정 사례 복습'}</h3><div class="row">복지수급 자격 판정 기준 · ${n}/4 완료</div><div class="bar"><i style="width:${n / 4 * 100}%"></i></div><a class="btn sm primary" href="#lesson">학습 열기${ic('arrow')}</a></article>
+    <article class="card pad hc"><span class="k">모의 학습 결과</span><h3>수급 자격 탈락자 항의 전화</h3><div class="row">${s1.done ? pill('3/3 충족', 'ok') : pill(`${sc1}/3 충족`, 'warn')}${s1.done ? '취약 항목 없음' : '보완할 항목: 이의신청 기한 안내'}</div><a class="btn sm" href="#sandbox">${s1.done ? '다른 시나리오 연습' : '다시 연습하기'}${ic('arrow')}</a></article>
+    <article class="card pad hc"><span class="k">인계서 초안</span><h3>사무인계인수서.hwpx</h3><div class="row">${pill(`${tplAuto}/${FIELDS.length} 자동 채움`, 'blue')}${S.tpl.v.date ? '인계 일자 입력됨' : '남은 항목: 인계 일자'}</div><a class="btn sm" href="#templates">확인하기${ic('arrow')}</a></article>
+  </div>
+  <div class="grid-2">
+    <article class="card pad"><div class="card-h">${ic('info')}<h3>담당자 확인 필요</h3><span class="sp"></span>${pill(`${openReviews()}건 대기`, 'warn')}</div>
+      <ul class="lst">${REVIEWS.slice(0, 4).map(r => `<li>${ic(r.st === 'answered' ? 'checkC' : 'clock')}<div class="t"><b>${esc(r.q)}</b><small>${r.st === 'answered' ? '답변: ' + esc(r.a) : r.from + (r.st === 'forwarded' ? ' · 팀 담당자에게 전달됨' : S.present ? ' · 전임자 B에게 요청됨' : ' · 팀 담당자에게 요청됨')}</small></div>${r.st === 'answered' ? pill('기록에 추가됨', 'ok') : pill('답변 대기')}</li>`).join('')}
+      </ul>
+      <p class="muted" style="font-size:12px;margin-top:8px">확인되지 않은 항목은 학습 완료로 처리하지 않습니다.</p>
+    </article>
+    <article class="card pad"><div class="card-h">${ic('user')}<h3>전임자 참여 상태</h3></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><span class="av b">B</span><div style="flex:1"><b>주무관 B</b><div class="muted" style="font-size:12.5px">회계과로 전보 · 2026.10.01</div></div><button class="toggle" data-act="present" aria-pressed="${S.present}"><span class="sw"></span>${S.present ? '참여 가능' : '부재'}</button></div>
+      <p style="font-size:13px;color:var(--fg-2)">${S.present ? '전임자가 주 2회 질문에 답합니다. 기록에 없는 내용은 전임자에게 확인을 요청하고, 답이 오면 기록에 추가됩니다.' : '전임자 없이 승인된 기록만으로 학습을 이어 갑니다. 답을 확정할 수 없는 항목은 ‘담당자 확인 필요’로 남기고 팀 담당자에게 연결합니다.'}</p>
+    </article>
+  </div>
+  <div class="grid-2">
+    <article class="card pad"><div class="card-h">${ic('clock')}<h3>다가오는 정기 업무</h3><span class="sp"></span><span class="muted" style="font-size:12px">전임자 결재 이력에서 찾음</span></div>
+      <ul class="lst">
+        <li><span class="date-chip">10.15</span><div class="t"><b>변동 신고 반영 마감</b><small>지난해 같은 시기 결재 2건 · 2주차에서 학습</small></div></li>
+        <li><span class="date-chip">10.20</span><div class="t"><b>생계급여 정기 지급 결재</b><small>지급일 5일 전 결재 완료 필요</small></div></li>
+        <li><span class="date-chip">10.31</span><div class="t"><b>분기 확인조사 계획 보고</b><small>도 보고 양식 · 전임자 작성본 있음</small></div></li>
+      </ul></article>
+    <article class="card pad"><div class="card-h">${ic('pointer')}<h3>현장 업무 도구</h3><span class="sp"></span><span class="muted" style="font-size:12px">업무 PC 화면 위에서 동작</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <a class="tool-tile" href="#guide"><span class="ti">${ic('pointer')}</span><span><b>화면 단계 안내</b><small>입찰공고 등록 화면에서 지금 입력할 칸을 짚어 줍니다</small></span></a>
+        <a class="tool-tile" href="#widget"><span class="ti">${ic('chat')}</span><span><b>질문 위젯</b><small>기안문 작성 중 창을 떠나지 않고 묻습니다</small></span></a>
+        <a class="tool-tile" href="#alert"><span class="ti">${ic('shield')}</span><span><b>위험 작업 경고</b><small>개인정보 파일을 암호 없이 저장하기 직전에 알립니다</small></span></a>
+      </div></article>
+  </div>`;
+}
+
+/* ================= curriculum ================= */
+function itemState(w, i) {
+  if (w > 0) return i === 3 && w === 2 ? 'sim' : 'todo';
+  const d = S.cur.done;
+  if (d[i]) return 'done';
+  if (i === 2) return 'now';
+  if (i === 3) return d[2] ? 'now' : 'lock';
+  return 'todo';
+}
+function vCurriculum() {
+  const d = S.cur.done, n = d.filter(Boolean).length;
+  const srcs = [['file', '결재 문서', '2025–2026 · 2개년 312건'], ['msg', '민원 접수 내역', '1,148건 · 개인정보 가림'], ['book', '지자체 복지 지침', '2026 개정본 반영']];
+  return `<div class="ph"><div><h1>3주 맞춤 커리큘럼</h1><p>도로과에서 복지정책과(기초생활보장)로 온 신임 주무관 A님에게 맞춘 과정입니다. 전임자 B 주무관의 기록으로 구성했습니다.</p></div><div class="acts"><button class="btn" data-act="replan">${ic('refresh')}다시 편성</button><a class="btn primary" href="#lesson">${ic('play')}1주차 이어서 학습</a></div></div>
+  <div class="grid-4 srcs">${srcs.map(([i, t, s]) => `<div class="s"><span class="si">${ic(i)}</span><span class="st"><b>${t}</b><small>${s}</small></span>${pill('요약 완료')}</div>`).join('')}<div class="s hl"><span class="si">${ic('sparkles')}</span><span class="st"><b>커리큘럼 편성 완료</b><small>12개 항목 · 3단계 학습</small></span></div></div>
+  <div class="pipe" aria-label="편성 과정"><span>${ic('folder')}기록 수집</span><span class="arr">${ic('chevR')}</span><span>${ic('layers')}업무별 분류</span><span class="arr">${ic('chevR')}</span><span>${ic('shieldOk')}전임자 승인</span><span class="arr">${ic('chevR')}</span><span>${ic('sparkles')}학습 순서 편성</span><span class="muted" style="border:0;background:none;font-weight:500">담당 업무와 이전 경험(도로과)에 맞춰 순서를 조정했습니다</span></div>
+  <div class="grid-3">${WEEKS.map((w, wi) => {
+    const items = WEEK_ITEMS[wi];
+    const on = wi === 0;
+    return `<section class="week ${on ? 'on' : ''}"><div class="week-h"><small>${w.n}주차</small>${on ? pill('학습 중', 'solid') : pill('예정')}</div><h3>${w.t}</h3><p class="stage">${w.stage}</p>
+    ${on ? `<div><div class="prog-h"><span>진행</span><b>${n}/4</b></div><div class="bar"><i style="width:${n / 4 * 100}%"></i></div></div>` : ''}
+    <ul>${items.map((t, i) => { const s = itemState(wi, i); return `<li><button class="wi ${s}" data-act="${wi === 0 ? 'openItem' : 'futureItem'}" data-i="${i}">${ic(s === 'done' ? 'checkC' : s === 'now' ? 'playC' : s === 'lock' ? 'lock' : 'circle')}<span>${t}</span>${s === 'now' ? '<span class="wi-now">진행 중</span>' : ''}</button></li>`; }).join('')}</ul>
+    <div class="tags">${w.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div></section>`;
+  }).join('')}</div>
+  <section class="card pad"><div class="card-h"><h3>지금 학습: 전임자 B 주무관의 처리 사례</h3><span class="sp"></span><span class="muted" style="font-size:12px">실제 처리 기록을 사례로 묶었습니다 · 개인정보 가림</span></div>
+    <div class="grid-3">${[
+      ['소득 변동 후 자격 재판정', '근로소득 발생 신고를 받아 소득인정액을 다시 산정하고 급여를 조정한 기록', '결재 2건 · 2026-0412'],
+      ['부양의무자 기준 예외 인정', '가족관계 단절을 확인해 부양의무자 기준의 예외를 인정한 결재', '결재 1건 · 2026-0577'],
+      ['재산 소득 환산 오류 정정', '금융재산 환산 오류를 찾아 정정하고 수급자에게 안내한 기록', '결재 2건 · 2026-0688'],
+    ].map((c, i) => `<a class="case" href="#lesson"><small>사례 ${i + 1}</small><b>${c[0]}</b><p>${c[1]}</p><span class="f">${ic('link')}${c[2]}</span></a>`).join('')}</div>
+  </section>`;
+}
+
+/* ================= lesson ================= */
+function botMsg(m) {
+  if (m.k === 'intro') return '';
+  const a = LS_ANS[m.k];
+  const reqLabel = S.present ? '전임자 B에게 확인 요청' : '팀 담당자에게 확인 요청';
+  return `<div class="cm bot ${a.need ? 'need' : ''}">${a.need ? pill(ic('info') + '담당자 확인 필요', 'warn') : ''}<p>${a.x}</p>${a.src ? `<div class="cm-src">${a.src.map(s => srcBtn(s[0], s[1])).join('')}</div>` : ''}${a.link ? `<a class="cm-link" href="#${a.link[0]}">${a.link[1]}${ic('arrow')}</a>` : ''}${a.need ? (m.req ? `<span class="muted" style="font-size:12px">${ic('check')} 요청함 · 답이 오면 알려 드리고 기록에 추가합니다</span>` : `<button class="btn sm" data-act="lsReq" data-q="${esc(m.q || a.q || '')}">${ic('send')}${reqLabel}</button>`) : ''}</div>`;
+}
+function vLesson() {
+  const L = S.ls;
+  const sugs = [['전 거주지에 자료를 요청하는 공문 양식이 있나요?'], ['전입 후 며칠 안에 판정해야 하나요?'], ['이의신청 기한은 어떻게 안내하나요?']].filter(s => !L.chat.some(m => m.x === s[0]));
+  const quiz = LESSON.quiz.map((q, qi) => `<div class="qz"><b>Q${qi + 1}. ${q.q}</b><div class="opts">${q.o.map((o, oi) => {
+    let c = L.ans[qi] === oi ? 'on' : '';
+    if (L.checked && L.ans[qi] === oi) c = oi === q.a ? 'right' : 'wrong';
+    if (L.checked && oi === q.a && L.ans[qi] !== oi && L.passed) c = 'right';
+    return `<button class="opt ${c}" data-act="lsPick" data-q="${qi}" data-o="${oi}" ${L.passed ? 'disabled' : ''}><span class="r"></span>${o}</button>`;
+  }).join('')}</div></div>`).join('');
+  const allAns = LESSON.quiz.every((q, i) => L.ans[i] !== undefined);
+  return `<div class="ph"><div><span class="eyebrow">1주차 · 복지수급 자격 판정 기준 · 3/4</span><h1>전입자 판정 사례 복습</h1><p>다른 시·군에서 전입한 수급자의 자격을 다시 판정한 전임자 B 주무관의 처리 기록입니다.</p></div><div class="acts"><a class="btn" href="#curriculum">${ic('chevL')}커리큘럼</a></div></div>
+  <div class="lesson">
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <section class="card pad"><div class="card-h"><h3>처리 순서</h3><span class="sp"></span><span class="muted" style="font-size:12px">출처를 누르면 원문 위치를 봅니다</span></div>
+        <ol class="steps">${LESSON.steps.map((s, i) => `<li class="${L.weak === i ? 'weak' : ''}"><span></span><div>${L.weak === i ? `<span class="weak-note">${ic('warn')}다시 볼 단계</span>` : ''}<b>${s.t}</b><p>${s.d}</p>${srcBtn(s.src[0], s.src[1])}</div></li>`).join('')}</ol>
+      </section>
+      <section class="card pad"><div class="card-h"><h3>전임자 메모</h3>${pill('승인됨', 'ok')}</div>
+        <blockquote class="memo">“전 거주지 자료가 늦어지면 받은 자료로 먼저 산정하고, 차이가 생기면 정정했습니다. 통지가 늦어지면 그 자체가 민원이 됩니다.”<cite>전임자 B 주무관 · 2026.09.30 승인</cite></blockquote>
+      </section>
+      <section class="card pad"><div class="card-h"><h3>참고 규정</h3><span class="sp"></span><span class="muted" style="font-size:12px">오늘 기준 효력이 있는 규정만 표시</span></div>
+        <ul class="laws"><li>${ic('book')}<span style="flex:1">「국민기초생활 보장법」 제22조 (신청에 의한 조사)</span>${pill('현행', 'ok')}</li><li>${ic('book')}<span style="flex:1">「국민기초생활 보장법」 제27조 (급여의 결정 등)</span>${pill('현행', 'ok')}</li><li>${ic('book')}<span style="flex:1">○○시 기초생활보장 업무 지침 3장 (2026 개정)</span>${pill('현행', 'ok')}</li></ul>
+      </section>
+      <section class="card pad" id="quiz"><div class="card-h"><h3>이해 확인</h3><span class="sp"></span><span class="muted" style="font-size:12px">자료를 열기만 해서는 이수되지 않습니다</span></div>
+        <div class="quiz">${quiz}
+          ${L.checked ? (L.passed ? `<div class="qres ok">${ic('checkC')}이해 확인 완료. 1주차 확인 퀴즈가 열렸습니다.</div>` : `<div class="qres no">${ic('warn')}틀린 문항이 있습니다. 표시한 단계를 다시 보고 풀어 보세요.</div>`) : ''}
+          <div style="display:flex;gap:8px">${L.passed ? `<a class="btn primary" href="#curriculum">커리큘럼으로${ic('arrow')}</a>` : L.checked ? `<button class="btn" data-act="lsRetry">${ic('refresh')}다시 풀기</button>` : `<button class="btn primary" data-act="lsCheck" ${allAns ? '' : 'disabled'}>답 확인하기</button>`}</div>
+        </div>
+      </section>
+    </div>
+    <aside class="card chatp" aria-label="이 항목에 질문하기">
+      <div class="ch"><b>이 항목에 질문하기</b><small>승인된 기록과 현행 규정 안에서만 답합니다</small></div>
+      <div class="cms" id="lsMsgs">${L.chat.map(m => m.w === 'me' ? `<div class="cm me">${esc(m.x)}</div>` : botMsg(m)).join('')}</div>
+      ${sugs.length ? `<div class="sugs">${sugs.map(s => `<button class="sug" data-act="lsAsk" data-q="${esc(s[0])}">${esc(s[0])}</button>`).join('')}</div>` : ''}
+      <div class="cin"><label class="sr" for="lsIn">질문 입력</label><input id="lsIn" data-enter="lsSend" placeholder="모르는 용어나 절차를 물어보세요"><button class="btn primary" data-act="lsSend" aria-label="보내기">${ic('send')}</button></div>
+    </aside>
+  </div>`;
+}
+
+/* ================= sandbox ================= */
+function evalScn(id) {
+  const sc = SCN[id], st = S.sb[id];
+  const text = [...sc.log.filter(m => m.w === 'me').map(m => m.x), st.law, st.answer].join(' ');
+  return sc.crit.map(c => c.test(text) ? 'ok' : (c.partial && c.partial(text)) ? 'part' : 'miss');
+}
+function vSandbox() {
+  const id = S.sb.active, sc = SCN[id], st = S.sb[id];
+  const keys = Object.keys(SCN), next = keys[(keys.indexOf(id) + 1) % keys.length];
+  const res = st.submitted ? evalScn(id) : null;
+  const score = res ? res.filter(x => x === 'ok').length : 0;
+  const log = st.done ? [...sc.log, { w: 'me', x: st.answer }, { w: 'them', x: sc.close }] : sc.log;
+  const fb = st.submitted ? `
+    <div class="fb-h"><b>AI 피드백</b><small>전임자 처리 기록 · 표준 대응 지침과 대조</small></div>
+    <ul class="fb-l">${sc.crit.map((c, i) => { const r = res[i]; return `<li class="${r}"><div class="fb-row">${ic(r === 'ok' ? 'checkC' : 'info')}<b>${c.k}</b>${pill(r === 'ok' ? '충족' : r === 'part' ? '부분' : '미흡', r === 'ok' ? 'ok' : 'warn')}</div>${r !== 'ok' ? `<div class="fb-fix"><span class="fb-fix-k">보완 방법</span><p>${r === 'part' && c.partialFix ? c.partialFix : c.fix}</p>${c.ref ? `<span class="tag">${ic('link')}${c.ref}</span>` : ''}</div>` : ''}</li>`; }).join('')}</ul>
+    <div><div class="fb-score-h"><span>기준 충족 점수</span><b>${score} / ${sc.crit.length} 충족</b></div><div class="bar"><i style="width:${score / sc.crit.length * 100}%"></i></div></div>
+    ${st.done ? `<div class="fb-done">${ic('checkC')}모든 기준을 충족했습니다. 커리큘럼의 취약 항목에서 지웠습니다.</div>` : ''}
+    <div><div class="sec-k">관련 근거</div><div class="chips">${sc.refs.map(r => `<span class="tag">${ic('file')}${r}</span>`).join('')}</div></div>
+    <div><div class="sec-k">전임자 대응 사례</div><blockquote class="memo">“${sc.memo}”<cite>전임자 B 주무관 · 승인된 메모</cite></blockquote></div>
+    <button class="fb-next" data-act="sbPick" data-k="${next}"><span><small>다음 시나리오</small><b>${SCN[next].t}</b></span>${ic('chevR')}</button>
+    <p class="fb-note">정답 문장과 비교하지 않고 사실 확인·근거·절차로 평가합니다. 판단하기 어려운 답변은 <button class="linkbtn" data-act="sbReview">담당자 검토로 넘기기</button></p>`
+    : `<div class="fb-h"><b>AI 피드백</b><small>제출하면 기준별로 채점합니다</small></div>
+    <ul class="fb-l pre">${sc.crit.map(c => `<li><div class="fb-row">${ic('circle')}<b>${c.k}</b>${pill('대기')}</div></li>`).join('')}</ul>
+    <p class="fb-empty">먼저 스스로 판단해 답을 적어 보세요. 막히면 힌트를 하나씩 열 수 있습니다.</p>
+    <div><div class="sec-k">관련 근거</div><div class="chips">${sc.refs.map(r => `<span class="tag">${ic('file')}${r}</span>`).join('')}</div></div>`;
+  return `<div class="sb">
+    <aside class="card sb-list" aria-label="시나리오 목록"><div class="sec-k">시나리오</div>${keys.map(k => { const s = SCN[k], ss = S.sb[k]; const stt = ss.done ? '완료' : k === id ? '진행 중' : '대기'; return `<button class="sl ${k === id ? 'on' : ''}" data-act="sbPick" data-k="${k}"><span class="sl-ic">${ic(s.icon)}</span><span class="sl-t"><b>${s.t}</b><small>${s.cat} · ${stt}</small></span></button>`; }).join('')}<p class="sb-list-note">${ic('info')}연습 화면입니다. 실제 민원 전송이나 결재는 일어나지 않습니다.</p></aside>
+    <section class="card sb-main">
+      <header class="sb-h"><span class="sb-h-ic">${ic(sc.icon)}</span><b>${sc.t}</b>${pill(sc.badge, 'blue')}<span class="sp"></span>${id === 's1' && !st.done ? `<span class="call">${ic('rec', 'rec')}<span id="callTime">${fmtSec(S.callSec)}</span></span>` : st.done ? pill('완료', 'ok') : ''}</header>
+      <div class="sb-brief"><b>상황</b>${sc.intro}<span class="sb-crit">확인 기준: ${sc.crit.map(c => c.k).join(' · ')}</span></div>
+      <div class="sb-log">${log.map(m => `<div class="msg ${m.w}"><span class="who">${m.w === 'me' ? '나' : sc.who + ' (가상)'}</span><p>${esc(m.x)}</p></div>`).join('')}</div>
+      ${st.hint ? `<div class="hints">${sc.hints.slice(0, st.hint).map((h, i) => `<p>${ic('bulb')}<span><b>힌트 ${i + 1}</b> ${h}</span></p>`).join('')}</div>` : ''}
+      <div class="sb-comp">
+        <div class="fld"><label for="sbLaw">조치 근거 법령</label><input id="sbLaw" data-in="sbLaw" value="${esc(st.law)}" placeholder="예: 국민기초생활 보장법 제38조" ${st.done ? 'disabled' : ''}></div>
+        <div class="fld"><label for="sbAns">답변 원문</label><textarea id="sbAns" data-in="sbAns" rows="3" placeholder="민원인에게 할 말을 적으세요" ${st.done ? 'disabled' : ''}>${esc(st.answer)}</textarea></div>
+        <div class="sb-act"><button class="btn sm ghost" data-act="sbHint" ${st.hint >= sc.hints.length || st.done ? 'disabled' : ''}>${ic('bulb')}힌트 보기 ${st.hint}/${sc.hints.length}</button><button class="btn sm ghost" data-act="sbRefs">${ic('book')}참고자료</button><span class="sp"></span>${st.done ? `<button class="btn" data-act="sbReset">${ic('refresh')}처음부터 다시</button>` : `<button class="btn primary" data-act="sbSubmit">${ic('send')}${st.submitted ? '수정해서 다시 제출' : '제출하고 피드백 받기'}</button>`}</div>
+      </div>
+    </section>
+    <aside class="card sb-fb" aria-label="AI 피드백">${fb}</aside>
+  </div>`;
+}
+
+/* ================= templates ================= */
+function cellText(k) {
+  const v = S.tpl.v[k];
+  if (k === 'date') return v ? esc(fmtDate(v)) : '';
+  return esc(v);
+}
+function tplCheck() {
+  const T = S.tpl, iss = [];
+  if (!T.v.date) iss.push({ k: 'date', lv: 'err', m: '인계 일자가 비어 있습니다. 직접 입력하는 항목입니다.' });
+  ['duty', 'status', 'pending', 'docs'].forEach(k => { if (!String(T.v[k]).trim()) iss.push({ k, lv: 'err', m: `${FIELDS.find(f => f.k === k).label} 항목이 비어 있습니다.` }); });
+  if (!T.v.people[0].trim() || !T.v.people[1].trim()) iss.push({ k: 'people', lv: 'err', m: '인계자·인수자를 모두 적어야 합니다.' });
+  if (!T.conf.dept) iss.push({ k: 'dept', lv: 'warn', m: '관계 부서 값의 기준일이 2025.12.18입니다. 지금도 맞는지 확인하세요.' });
+  return iss;
+}
+function tplStatusHTML() {
+  const st = S.tpl.status;
+  const idx = st === 'requested' ? 3 : st === 'generated' ? 2 : S.tpl.issues ? 1 : 0;
+  return ['초안 작성', '누락 점검', 'HWPX 생성', '결재 요청'].map((t, i) => `<span class="${i < idx ? 'done' : i === idx ? 'cur' : ''}">${t}</span>`).join(ic('chevR'));
+}
+function vTemplates() {
+  const T = S.tpl, tpl = TPLS.find(t => t.id === T.active), isH = T.active === 'handover';
+  const auto = FIELDS.filter(f => f.auto).length;
+  const iss = T.issues || [];
+  const cls = k => { const i = iss.find(x => x.k === k); return (T.sel === k ? 'sel ' : '') + (i ? (i.lv === 'err' ? 'err' : 'wrn') : ''); };
+  const chip = k => FIELDS.find(f => f.k === k).auto ? '<span class="fchip">자동</span>' : '';
+  const groups = [...new Set(TPLS.map(t => t.g))];
+  const list = groups.map(g => `<div class="sec-k" style="margin-top:6px">${g}</div>` + TPLS.filter(t => t.g === g).map(t => `<button class="tl ${t.id === T.active ? 'on' : ''}" data-act="tplOpen" data-k="${t.id}">${ic('file')}<span><b>${t.t}</b><small>${t.s}</small></span></button>`).join('')).join('');
+  const doc = isH ? `<div class="paper"><h3>사무인계인수서</h3>
+    <table class="doc-t">
+      <tr><th>인계자</th><td class="f ${cls('people')}" data-act="tplPick" data-k="people"><span class="cellv" id="cell-p0">${esc(T.v.people[0])}</span>${chip('people')}</td><th>인수자</th><td class="f ${cls('people')}" data-act="tplPick" data-k="people"><span class="cellv" id="cell-p1">${esc(T.v.people[1])}</span>${chip('people')}</td></tr>
+      ${['duty', 'status', 'pending', 'dept', 'docs'].map(k => `<tr><th>${FIELDS.find(f => f.k === k).label}</th><td colspan="3" class="f ${cls(k)}" data-act="tplPick" data-k="${k}"><span class="cellv" id="cell-${k}">${cellText(k)}</span>${chip(k)}</td></tr>`).join('')}
+      <tr><th>인계 일자</th><td colspan="3" class="f ${cls('date')}" data-act="tplPick" data-k="date"><span class="cellv" id="cell-date">${cellText('date')}</span>${T.v.date ? '' : '<span class="fchip need">입력 필요</span>'}</td></tr>
+    </table>
+    <p class="sign">위와 같이 사무를 인계·인수합니다.</p>
+    <div class="sign-row"><span>인계자 복지정책과 주무관 B (인)</span><span>인수자 복지정책과 주무관 A (인)</span></div>
+    <div class="sign-row"><span>확인자 복지정책과장 (인)</span></div></div>`
+    : `<div class="paper"><h3 style="letter-spacing:.2em;text-indent:.2em">${tpl.t}</h3><table class="doc-t"><tr><th>수신</th><td>${T.active === 'coop' ? '전 거주지 보장기관 (협조 공문 2026-0388 기준)' : ''}</td></tr><tr><th>제목</th><td>${T.active === 'coop' ? '전입 수급 가구 조사 자료 요청' : ''}</td></tr><tr><th>내용</th><td style="height:160px;vertical-align:top;color:#777">${T.active === 'coop' ? '1. 관련: 「국민기초생활 보장법」 제22조<br>2. 대상 가구의 수급 이력과 소득·재산 조사 자료를 요청합니다.' : '시연에서는 미리보기만 제공합니다.'}</td></tr></table><p class="sign" style="color:#777">자동 채우기는 ‘사무인계인수서’에서 체험할 수 있습니다.</p></div>`;
+  const fieldCard = f => {
+    const sel = T.sel === f.k, i = iss.find(x => x.k === f.k);
+    const val = f.k === 'people' ? T.v.people.join(' → ') : f.k === 'date' ? fmtDate(T.v.date) : T.v[f.k];
+    let ed = '';
+    if (sel) {
+      if (f.k === 'people') ed = `<div class="fc-2"><label class="sr" for="f-p0">인계자</label><input id="f-p0" data-in="tplV" data-k="people" data-i="0" value="${esc(T.v.people[0])}"><label class="sr" for="f-p1">인수자</label><input id="f-p1" data-in="tplV" data-k="people" data-i="1" value="${esc(T.v.people[1])}"></div>`;
+      else if (f.k === 'date') ed = `<label class="sr" for="f-date">인계 일자</label><input id="f-date" type="date" data-in="tplV" data-ch="tplDate" data-k="date" value="${esc(T.v.date)}">`;
+      else ed = `<label class="sr" for="f-${f.k}">${f.label}</label><textarea id="f-${f.k}" rows="2" data-in="tplV" data-k="${f.k}">${esc(T.v[f.k])}</textarea>`;
+    }
+    return `<div class="fc ${sel ? 'on' : ''} ${i ? (i.lv === 'err' ? 'err' : 'wrn') : ''}"><button class="fc-h" data-act="tplPick" data-k="${f.k}"><b>${f.label}</b>${f.auto ? pill('기록에서 가져옴', 'blue') : pill('직접 입력', 'warn')}</button>
+      ${sel ? ed : `<p class="fc-v">${val ? esc(val) : '<span class="muted">비어 있음 · 임의로 채우지 않습니다</span>'}</p>`}
+      <p class="fc-src">${ic('link')}${f.auto ? `출처: ${f.src} · 기준일 ${f.date}` : '기록에 없는 값이라 직접 입력해야 합니다'}</p>
+      ${f.stale && !T.conf.dept ? `<div class="fc-warn"><span>${ic('warn')} 기준일이 오래되었습니다. 지금도 맞는 값인지 확인하세요.</span><button class="btn sm" data-act="tplConfirm">값 확인함</button></div>` : ''}</div>`;
+  };
+  return `<div class="tp">
+    <aside class="card tp-list" aria-label="양식 목록"><div class="sec-k">순환보직 인계 양식</div>${list}</aside>
+    <section class="card tp-doc">
+      <div class="tp-doc-h">${ic('file')}<b>${tpl.t}.hwpx</b>${isH ? pill('자동 채움', 'blue') : ''}<span class="sp"></span><span class="flow-steps" id="tplStatus">${tplStatusHTML()}</span></div>
+      <div class="tp-meta"><span>적용 대상: ${tpl.target}</span><span>개정일: ${tpl.rev}</span><span>기관 표준 양식</span><span class="mono">100%</span></div>
+      <div class="tp-canvas">${doc}</div>
+    </section>
+    <aside class="card tp-side" aria-label="자동 채우기">
+      <div class="tp-side-h"><b>자동 채우기</b><small>전임자 기록 6곳에서 가져온 값 · 출처와 기준일 확인</small></div>
+      ${isH ? `<div><div class="prog-h"><span>기록에서 채운 항목</span><b>${auto}/${FIELDS.length}</b></div><div class="bar"><i style="width:${auto / FIELDS.length * 100}%"></i></div></div>
+      ${iss.length ? `<div class="issues" role="alert"><b>다운로드 전 점검 ${iss.length}건</b>${iss.map(i => `<div class="issue ${i.lv === 'err' ? 'err' : 'warn'}">${ic(i.lv === 'err' ? 'info' : 'warn')}<span>${i.m}</span><button class="btn sm" data-act="tplGo" data-k="${i.k}">이동</button></div>`).join('')}</div>` : ''}
+      ${S.tpl.status === 'generated' ? `<div class="state ok">${ic('checkC')}<span>점검 완료 · HWPX를 만들었습니다. 결재 요청 전입니다.</span></div>` : ''}
+      ${S.tpl.status === 'requested' ? `<div class="state ok">${ic('checkC')}<span>결재 요청을 기록했습니다. 결재 완료 여부는 기관 결재 시스템에서 따로 확인합니다.</span></div>` : ''}
+      ${FIELDS.map(fieldCard).join('')}
+      <div class="tp-actions"><button class="btn" data-act="tplDownload">${ic('download')}HWPX 다운로드</button><button class="btn primary" data-act="tplRequest">${ic('send')}결재 요청</button></div>
+      <p class="tp-note">시연 환경에서는 파일을 실제로 저장하지 않습니다. 작성 중인 값은 이 화면을 떠나도 유지됩니다.</p>` : `<p class="fb-empty">이 양식은 미리보기만 제공합니다. 왼쪽에서 ‘사무인계인수서’를 열어 자동 채우기를 체험하세요.</p>`}
+    </aside>
+  </div>`;
+}
+
+/* ================= records ================= */
+function vRecords() {
+  const R = S.rec, types = ['전체', '처리 사례', '민원 대응', '규정·지침', '절차 카드'];
+  const q = R.q.trim();
+  const list = RECORDS.filter(r => (R.f === '전체' || r.type === R.f) && (!q || [r.t, r.prob, (r.how || []).join(' '), r.exc].join(' ').includes(q)));
+  const a = RECORDS.find(r => r.id === R.a && !r.locked) || RECORDS[0];
+  const ver = a.versions ? `<div><div class="sec-k">규정 적용 기간</div><div class="ver">
+    <div class="ver-row"><span>2025 지침</span><div class="ver-bar"><i class="old" style="left:0;width:57%"></i></div>${pill('만료 · 답변에 쓰지 않음')}</div>
+    <div class="ver-row"><span>2026 지침</span><div class="ver-bar"><i class="cur" style="left:57%;width:43%"></i></div>${pill('현행', 'ok')}</div>
+    <div class="ver-row ax-row"><span></span><div class="ax"><span style="left:0">2025.01</span><span style="left:57%;transform:translateX(-50%)">2026.01</span><span style="right:0">2026.10 오늘</span></div><span></span></div></div></div>` : '';
+  return `<div class="ph"><div><h1>업무 기록</h1><p>전임자가 승인한 기록만 답변과 학습에 쓰입니다. 열람 권한이 없는 기록은 내용이 보이지 않습니다.</p></div></div>
+  <div class="rc-filters" role="group" aria-label="기록 종류">${types.map(t => `<button class="fchipb ${R.f === t ? 'on' : ''}" data-act="recF" data-v="${t}">${t}</button>`).join('')}${q ? `<button class="fchipb on" data-act="recClear">“${esc(q)}” 검색 ${ic('x')}</button>` : ''}</div>
+  <div class="rc">
+    <div class="rc-list">${list.length ? list.map(r => r.locked ? `<div class="ri locked" aria-disabled="true"><span class="rt">${ic('lock')}${r.type}</span><b>${r.t}</b><small>${r.acl} · 내용 비공개</small></div>` : `<button class="ri ${r.id === a.id ? 'on' : ''} ${r.isNew ? 'new' : ''}" data-act="recPick" data-k="${r.id}"><span class="rt">${pill(r.type, r.isNew ? 'ok' : 'blue')}<span>검토일 ${r.rev}</span></span><b>${r.t}</b></button>`).join('') : '<p class="fb-empty">검색 결과가 없습니다. 기록에 없는 내용은 질문 위젯에서 담당자 확인을 요청할 수 있습니다.</p>'}</div>
+    <article class="card rd"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${pill(a.type, 'blue')}${pill('승인됨', 'ok')}<span class="muted" style="font-size:12px">${a.dept} · 검토일 ${a.rev}</span></div><h2>${a.t}</h2>
+      <dl class="kv"><dt>문제</dt><dd>${a.prob}</dd><dt>배경·이유</dt><dd>${a.why}</dd><dt>해결 절차</dt><dd><ol>${a.how.map(h => `<li>${h}</li>`).join('')}</ol></dd><dt>예외·주의</dt><dd>${a.exc}</dd><dt>출처</dt><dd><div class="chips">${a.src.map(s => srcBtn(s[0], s[1])).join('')}</div></dd><dt>열람 권한</dt><dd>${ic('lock')} ${a.acl}</dd></dl>
+      ${ver}
+    </article>
+  </div>`;
+}
+
+/* ================= real-time: guide ================= */
+const priceNum = () => parseInt(String(S.g.v.price).replace(/[^0-9]/g, ''), 10) || 0;
+const recRegion = () => priceNum() < REGION_LIMIT ? '○○시' : '제한 없음';
+function gValid(i) {
+  const v = S.g.v;
+  if (i === 0) return !!v.file;
+  if (i === 1) return !!v.region;
+  if (i === 2) return !!v.method && (v.method !== '적격심사' || !!v.crit);
+  return false;
+}
+function gTip(i) {
+  const v = S.g.v, p = priceNum().toLocaleString('ko-KR');
+  if (i === 0) return '공고서 HWPX를 첨부하세요. 파일명에 공고번호가 없어 반려된 적이 있습니다.';
+  if (i === 1) return `추정가격 ${p}원은 절차 카드의 지역 제한 기준 금액(시연 기준 1억 원)${priceNum() < REGION_LIMIT ? '보다 낮습니다. 승인된 절차대로 ‘○○시’를 고르세요.' : ' 이상입니다. 지역 제한을 걸지 않습니다.'}`;
+  if (i === 2) return v.method === '적격심사' && !v.crit ? '‘적격심사’를 골랐습니다. 아래 심사 기준표를 첨부해야 다음 단계로 갑니다.' : '낙찰자 결정 방법을 고르세요. ‘적격심사’를 고르면 심사 기준표를 함께 첨부해야 합니다.';
+  return '입력값을 직접 한 번 더 확인하고 제출하세요. TacitFlow는 제출 버튼을 대신 누르지 않습니다.';
+}
+function gBubble(i) {
+  const s = GSTEPS[i], v = S.g.v;
+  let note = '';
+  if (i === 1 && v.region && v.region !== recRegion()) note = `<p class="tf-note">절차 카드 권장값(${recRegion()})과 다릅니다. 다른 값을 쓰려면 근거를 기안에 남기세요.</p>`;
+  if (S.g.early) note += `<p class="tf-note">${S.g.early}</p>`;
+  return `<tr class="tf-brow"><td colspan="2"><div class="tf-bubble" role="status"><div class="tf-b-h"><span class="tf-badge">${ic('sparkles')}${i + 1}/4</span><b>${s.t}</b></div><p>${gTip(i)}</p>${note}<div class="tf-b-f"><span class="src-s">${ic('link')}${s.src} · B 주무관 승인</span><span class="sp"></span><button class="btn sm ghost" data-act="gPrev" ${i === 0 ? 'disabled' : ''}>이전 단계</button>${i < 3 ? `<button class="btn sm primary" data-act="gNext" ${gValid(i) ? '' : 'disabled'}>확인 완료</button>` : ''}</div></div></td></tr>`;
+}
+function vGuide() {
+  const G = S.g, v = G.v;
+  const guiding = !G.paused && !G.fail && !G.manual && !G.submitted;
+  const cur = k => guiding && GSTEPS[G.step].k === k;
+  const rc = i => G.st[i] === 'recheck' ? 'tf-recheck' : '';
+  const row = (k, i, label, ctrl, extra = '') => `<tr><th>${label}</th><td><div class="lf ${cur(k) ? 'tf-focus' : ''} ${rc(i)}">${ctrl}</div>${extra}</td></tr>${cur(k) ? gBubble(i) : ''}`;
+  const opt = (arr, val) => arr.map(o => `<option ${o === val ? 'selected' : ''}>${o}</option>`).join('');
+  const stepIc = s => s === 'done' ? 'checkC' : s === 'now' ? 'playC' : s === 'recheck' ? 'warn' : 'circle';
+  const dock = G.manual ? `<aside class="dock" aria-label="수동 체크리스트"><div class="dock-h">${logo(22)}<b>수동 체크리스트</b><span class="live off">화면 인식 끔</span></div><p class="dock-sub">화면을 인식하지 않고 절차 카드의 순서만 보여 줍니다.</p>
+      <ul class="manual">${GSTEPS.map((s, i) => `<li><label><input type="checkbox" data-ch="gMc" data-i="${i}" ${G.mc[i] ? 'checked' : ''}><span><b>${s.t}</b><br><small class="muted">${gTip(i)}</small></span></label></li>`).join('')}</ul>
+      <div class="dock-actions"><button class="btn sm primary" data-act="gAuto">${ic('refresh')}화면 안내로 돌아가기</button></div></aside>`
+    : `<aside class="dock" aria-label="TacitFlow 화면 안내"><div class="dock-h">${logo(22)}<b>TacitFlow 화면 안내</b><span class="live ${G.paused || G.fail ? 'off' : ''}">${G.submitted ? '안내 완료' : G.paused ? '일시정지' : G.fail ? '인식 대기' : '안내 중'}</span></div>
+      <p class="dock-sub">${G.paused ? '일시정지 중에는 화면을 읽지 않습니다.' : '인식 중인 화면: 업무관리시스템 › 계약 › 입찰공고 등록'}</p>
+      <ol class="gsteps">${GSTEPS.map((s, i) => `<li class="${G.st[i]}"><button data-act="gGo" data-i="${i}">${ic(stepIc(G.st[i]))}<span><b>${s.t}</b>${G.st[i] === 'recheck' ? '<small>추정가격이 바뀌어 다시 확인해야 합니다</small>' : ''}</span></button></li>`).join('')}</ol>
+      ${G.submitted ? `<div class="state ok">${ic('checkC')}<span>후임자가 직접 제출했습니다. 이 절차는 업무 기록에 남습니다.</span></div>` : ''}
+      <div class="dock-actions"><button class="btn sm" data-act="gPause">${ic(G.paused ? 'play' : 'pause')}${G.paused ? '안내 다시 켜기' : '일시정지'}</button><button class="btn sm ghost" data-act="gFail">${ic('warn')}인식 실패 상황 보기</button><button class="btn sm ghost" data-act="gReset">${ic('undo')}처음부터</button></div>
+      <p class="dock-note">최종 제출은 후임자가 직접 합니다. 앞 단계로 돌아가도 입력값은 그대로 남고, 앞 값을 바꾸면 영향받는 단계를 다시 확인하라고 표시합니다.</p></aside>`;
+  return `<div class="stage">
+    <div class="stage-top"><span class="stage-label">${ic('pointer')}실시간 모드 · 후임자 업무 PC 화면 (시뮬레이션)</span><span class="stage-label">${ic('eyeOff')}허용된 업무 화면만 인식</span></div>
+    <div class="stage-grid">
+      <div class="lwin" aria-label="가상 업무관리시스템 창">
+        <div class="lwin-bar">${ic('grid')}업무관리시스템 (가상) · 계약관리<span class="wb">_ □ ×</span></div>
+        <div class="lwin-menu"><span>파일</span><span class="on">계약</span><span>지출</span><span>조회</span><span>도움말</span></div>
+        <div class="lwin-body">
+          <div class="lwin-title">입찰공고 등록</div>
+          <table class="ltable">
+            <tr><th>공고명</th><td><div class="lf"><input type="text" value="2026년 기초생활보장 안내문 인쇄 용역" aria-label="공고명"></div></td></tr>
+            <tr><th>계약 방법</th><td><div class="lf"><select aria-label="계약 방법"><option>일반경쟁</option><option>제한경쟁</option><option>수의계약</option></select></div></td></tr>
+            <tr><th>추정가격</th><td><div class="lf"><input type="text" id="gPrice" data-ch="gPrice" value="${esc(v.price)}" aria-label="추정가격" style="width:140px;text-align:right">원</div></td></tr>
+            ${row('file', 0, '공고서 첨부', `<button class="lbtn" data-act="gAttach" data-k="file">파일 선택</button><span class="fname">${v.file ? esc(v.file) : '선택된 파일 없음'}</span>`)}
+            ${row('region', 1, '지역 제한', `<select data-ch="gSel" data-k="region" aria-label="지역 제한"><option value="" ${v.region ? '' : 'selected'}>선택</option>${opt(['제한 없음', '○○도', '○○시'], v.region)}</select>`)}
+            ${row('method', 2, '낙찰자 결정 방법', `<select data-ch="gSel" data-k="method" aria-label="낙찰자 결정 방법"><option value="" ${v.method ? '' : 'selected'}>선택</option>${opt(['적격심사', '최저가', '협상에 의한 계약'], v.method)}</select>`)}
+            ${v.method === '적격심사' ? `<tr><th>심사 기준표</th><td><div class="lf ${cur('method') && !v.crit ? 'tf-focus' : ''}"><button class="lbtn" data-act="gAttach" data-k="crit">파일 선택</button><span class="fname">${v.crit ? esc(v.crit) : '선택된 파일 없음'}</span></div></td></tr>` : ''}
+          </table>
+          <div class="lacts"><button class="lbtn">임시저장</button><span class="lf ${cur('submit') ? 'tf-focus' : ''}"><button class="lbtn pri" data-act="gSubmit">제출</button></span></div>
+          ${cur('submit') ? `<table class="ltable" style="min-width:0"><tbody>${gBubble(3)}</tbody></table>` : ''}
+        </div>
+        ${G.fail ? `<div class="tf-fail"><div class="box" role="alertdialog" aria-label="화면 인식 실패">${ic('warn')}<b>화면을 확실히 인식하지 못했습니다</b><p>화면 배치가 바뀌어 항목 위치를 찾지 못했습니다. 틀린 버튼을 안내하지 않도록 안내를 잠시 멈췄습니다.</p><div class="row"><button class="btn sm primary" data-act="gRetry">${ic('refresh')}다시 인식</button><button class="btn sm" data-act="gManual">수동 체크리스트로 전환</button></div></div></div>` : ''}
+        ${G.submitted ? `<div class="lmodal"><div class="lwin"><div class="lwin-bar">알림</div><div class="dlg-body"><p>입찰공고가 제출되었습니다. (가상 화면)</p><div class="lacts"><button class="lbtn pri" data-act="gReset">확인</button></div></div></div></div>` : ''}
+      </div>
+      ${dock}
+    </div>
+    <div class="taskbar">${logo(20)}<span class="tk on">${ic('grid')}업무관리시스템</span><span class="tk">${ic('file')}기안문.hwpx</span><span class="clock">14:26</span></div>
+  </div>`;
+}
+
+/* ================= real-time: widget ================= */
+function wAnswer(m) {
+  if (m.k === 'intro') return `<div class="cm bot"><p>기안문을 쓰는 중이군요. 질문하면 <b>규정</b>과 <b>과거 처리 사례</b>를 나눠서 답합니다.</p></div>`;
+  if (m.k === 'a1') return `<div class="ans"><div class="ans-row"><span class="ans-k">결론</span>${pill('면제 대상', 'ok')}</div><p class="ans-main">수급자 본인이 신청한 주민등록표 등본 발급은 수수료 면제 대상입니다.</p>
+    <div class="ans-k">적용 조건</div><ul class="ans-cond"><li>${ic('check')}신청인이 수급자 본인</li><li>${ic('check')}수급자 증명서로 자격 확인</li><li class="q">${ic('info')}대리 신청은 조건이 다름 (추가 질문 필요)</li></ul>
+    <div class="ans-k">출처</div><div class="ans-src">${srcBtn('fee', '규정 · ○○시 제증명 수수료 조례 제5조 (현행)')}${srcBtn('fee921', '과거 사례 · 복지정책과-2026-0921')}</div>
+    ${S.w.pend ? `<div class="preview"><span class="ans-k">문서에 추가할 문장</span><q>가. 면제 여부: 신청인은 「국민기초생활 보장법」에 따른 수급자로, ○○시 제증명 수수료 조례 제5조에 따라 수수료 면제 대상임.</q><div class="ans-act"><button class="btn sm primary" data-act="wInsertOk">커서 위치에 추가</button><button class="btn sm ghost" data-act="wInsertNo">취소</button></div></div>` : S.w.inserted ? `<span class="muted" style="font-size:12px">${ic('check')} 문서에 추가함 · <button class="linkbtn" data-act="wUndo">되돌리기</button></span>` : `<div class="ans-act"><button class="btn sm" data-act="wInsert">${ic('edit')}문서에 반영</button></div>`}</div>`;
+  if (m.k === 'clar') return `<div class="cm bot"><p>답하려면 조건 하나가 더 필요합니다. 대리인은 누구인가요?</p><div class="ans-act">${m.done ? '' : `<button class="btn sm" data-act="wClar" data-v="가족 · 위임장 있음">가족 · 위임장 있음</button><button class="btn sm" data-act="wClar" data-v="가족 아님">가족 아님</button>`}</div></div>`;
+  if (m.k === 'a2') return `<div class="ans need"><div class="ans-row"><span class="ans-k">결론</span>${pill('확인 필요', 'warn')}</div><p class="ans-main">조례에 대리 신청 면제 규정이 없어 단정할 수 없습니다.</p>
+    <div class="ans-k">확인할 쟁점</div><ul class="ans-cond"><li class="q">${ic('info')}조례의 ‘본인’에 위임 대리가 포함되는지</li><li class="q">${ic('info')}과거 면제 사례(2026-0921)의 판단 근거가 기록에 없음</li></ul>
+    <div class="ans-k">근거</div><div class="ans-src">${srcBtn('fee', '규정 · 조례 제5조: 대리 신청 규정 없음')}${srcBtn('fee921', '과거 사례 · 가족 대리 1건 면제 (근거 미기록)')}</div>
+    <div class="ans-act">${S.w.reqd ? `<span class="muted" style="font-size:12px">${ic('check')} 검토 요청함 · 질문·근거·쟁점을 함께 보냈습니다</span>` : `<button class="btn sm primary" data-act="wReq">${ic('send')}담당자 검토 요청</button>`}</div></div>`;
+  if (m.k === 'gen') return `<div class="cm bot need">${pill(ic('info') + '조건 부족', 'warn')}<p>질문에 필요한 조건이 부족합니다. 어떤 민원의, 어떤 처리에 관한 질문인지 알려 주세요. 예: “등본 발급 수수료 면제 대상인가?”</p></div>`;
+  return '';
+}
+function vWidget() {
+  const W = S.w;
+  const chips = W.phase === 'start' ? ['이 민원은 수수료 면제 대상인가?'] : W.phase === 'a1' ? ['대리 신청도 같은가?'] : [];
+  const panel = W.open ? `<div class="fw-panel" role="dialog" aria-label="TacitFlow 질문 위젯">
+      <div class="fw-h">${logo(22)}<b>업무 질문</b><button class="icon-btn sm" data-act="wToggle" aria-label="위젯 접기">${ic('x')}</button></div>
+      <div class="fw-ctx">${ic('eyeOff')}참조 범위: 민원 · 수수료 업무 / 현재 창: 기안문 (본문만)</div>
+      <div class="fw-msgs" id="wMsgs">${W.msgs.map(m => m.w === 'me' ? `<div class="cm me">${esc(m.x)}</div>` : wAnswer(m)).join('')}</div>
+      ${chips.length ? `<div class="sugs">${chips.map(c => `<button class="sug" data-act="wAsk" data-q="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
+      <div class="cin"><label class="sr" for="wIn">질문 입력</label><input id="wIn" data-enter="wSend" placeholder="작업 중 궁금한 점을 물어보세요"><button class="btn primary" data-act="wSend" aria-label="보내기">${ic('send')}</button></div>
+    </div>` : `<button class="fw-pill" data-act="wToggle">${logo(26)}TacitFlow에 질문</button>`;
+  return `<div class="stage">
+    <div class="stage-top"><span class="stage-label">${ic('chat')}실시간 모드 · 우상단 플로팅 위젯 (시뮬레이션)</span><span class="stage-label">${ic('lock')}열람 권한 없는 자료는 답변에 쓰지 않음</span></div>
+    <div class="wstage">
+      <div class="fw">${panel}</div>
+      <div class="wdoc"><div class="lwin" aria-label="가상 문서 편집기 창">
+        <div class="lwin-bar">${ic('file')}기안문.hwpx · 문서 편집기 (가상)<span class="wb">_ □ ×</span></div>
+        <div class="lwin-menu"><span>파일</span><span>편집</span><span>보기</span><span>입력</span><span>서식</span></div>
+        <div class="lwin-body" style="background:var(--canvas)">
+          <div class="editor">
+            <div class="er"><b>수신</b><span>민원인 (김○○)</span></div>
+            <div class="er"><b>제목</b><span>제증명 발급 수수료 면제 안내</span></div>
+            <p>&nbsp;</p>
+            <p>1. 관련: 민원 접수 제2026-1011호</p>
+            <p>2. 위 호와 관련하여 신청하신 주민등록표 등본 발급 수수료의 면제 여부를 아래와 같이 안내합니다.</p>
+            <p class="in">${W.inserted ? `<span class="ins">가. 면제 여부: 신청인은 「국민기초생활 보장법」에 따른 수급자로, ○○시 제증명 수수료 조례 제5조에 따라 수수료 면제 대상임.</span>` : '가. 면제 여부: '}<span class="caret"></span></p>
+            <p class="in">나. 문의: 복지정책과 기초생활보장 담당</p>
+            <p>&nbsp;</p><p>끝.</p>
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <div class="taskbar">${logo(20)}<span class="tk">${ic('grid')}업무관리시스템</span><span class="tk on">${ic('file')}기안문.hwpx</span><span class="clock">14:31</span></div>
+  </div>`;
+}
+
+/* ================= real-time: alert ================= */
+function alResolve() {
+  const A = S.al;
+  return [
+    { k: '파일 암호 설정', st: A.pw && A.pwv.length >= 4 ? 'ok' : 'no', d: '4자 이상 암호' },
+    { k: '승인된 보안 폴더에 저장', st: A.folder === 'secure' ? 'ok' : 'no', d: 'D:\\업무\\기초생활보장\\보안' },
+    { k: '반출 목적 승인 여부', st: 'unk', d: '화면만으로 확인할 수 없어 담당자 확인으로 남깁니다' },
+  ];
+}
+function vAlert() {
+  const A = S.al, rs = alResolve(), fixed = rs.filter(r => r.st === 'ok').length;
+  const showAlert = A.warned && !A.closed && !A.saved;
+  const hl = k => A.hl === k ? 'focus-hl' : '';
+  const card = showAlert ? `<section class="alert-card" role="alertdialog" aria-label="위험 작업 경고">
+      <div class="alert-top ${A.checked && fixed === 2 ? 'mid' : ''}">${ic('shield')}<b>${A.checked && fixed === 2 ? '남은 확인 1건' : '즉시 재확인 필요'}</b>${pill('개인정보', 'risk')}</div>
+      <div class="alert-body">
+        <h4>개인정보가 담긴 파일을 암호 없이 바탕화면에 저장하려고 합니다</h4>
+        <div><div class="ab-k">무엇이 문제인가</div><p>내보내는 파일에 주민등록번호·계좌번호 열이 있습니다. 1,212행이 그대로 저장됩니다.</p></div>
+        <div><div class="ab-k">확인할 조건</div><ul class="chk">${rs.map(r => `<li class="${A.checked ? r.st : ''}">${ic(A.checked ? (r.st === 'ok' ? 'checkC' : r.st === 'unk' ? 'info' : 'circle') : 'circle')}<span>${r.k}<small>${r.d}</small></span></li>`).join('')}</ul></div>
+        <div><div class="ab-k">어디서 고치나</div><div class="chips"><button class="btn sm" data-act="alHl" data-k="pw">${ic('lock')}암호 설정으로 이동</button><button class="btn sm" data-act="alHl" data-k="folder">${ic('folder')}저장 위치 바꾸기</button></div></div>
+        <div class="chips">${srcBtn('privacy', '「개인정보 보호법」 제29조 (안전조치의무)')}${srcBtn('plan', '○○시 개인정보 내부관리계획 4.2')}</div>
+        ${A.checked && fixed === 2 ? `<div class="state wait">${ic('info')}<span>암호와 저장 위치는 해결했습니다. 반출 목적 승인은 화면으로 확인할 수 없어 담당자 확인으로 남깁니다.${A.reqd ? ' <b>요청함.</b>' : ` <button class="linkbtn" data-act="alReq">담당자 확인 요청</button>`}</span></div>` : ''}
+        ${A.checked && fixed < 2 ? `<div class="state wait">${ic('warn')}<span>아직 ${2 - fixed}개 조건이 남았습니다. 위 버튼으로 고칠 곳으로 이동하세요.</span></div>` : ''}
+        ${A.fp ? (A.fpSent ? `<div class="state ok">${ic('checkC')}<span>오탐 검토 요청을 기록했습니다. 경고 사유·조치·검토 결과가 함께 남습니다.</span></div>` : `<div class="fld" style="grid-template-columns:1fr"><label for="alFpTxt">해당하지 않는 이유</label><textarea id="alFpTxt" rows="2" placeholder="예: 이미 마스킹된 통계 파일입니다"></textarea><button class="btn sm" data-act="alFpSend">검토 요청 보내기</button></div>`) : ''}
+      </div>
+      <div class="alert-foot"><button class="btn sm primary" data-act="alRecheck">${ic('refresh')}다시 점검</button>${A.fp ? '' : `<button class="btn sm ghost" data-act="alFp">해당하지 않음</button>`}<span class="sp"></span><button class="btn sm ghost" data-act="alClose">닫기</button></div>
+    </section>` : '';
+  const log = `<aside class="dock" aria-label="경고 기록"><div class="dock-h">${logo(22)}<b>TacitFlow 경고 기록</b><span class="live">감시 중</span></div>
+      <ul class="alog">
+        ${A.saved ? `<li><span class="mono">14:39</span><span>${pill('해결', 'ok')} 개인정보 파일 저장 · 암호·보안 폴더 확인${A.reqd ? ', 반출 승인은 담당자 확인 중' : ''}</span></li>` : ''}
+        ${A.closed && !A.saved ? `<li><span class="mono">14:38</span><span>${pill('미해결', 'risk')} 개인정보 파일 저장 경고를 닫음 · 해결로 처리하지 않음 <button class="linkbtn" data-act="alOpen">다시 열기</button></span></li>` : ''}
+        ${A.warned && !A.closed && !A.saved ? `<li><span class="mono">14:38</span><span>${pill('즉시 재확인', 'risk')} 개인정보 파일 저장</span></li>` : ''}
+        <li><span class="mono">13:42</span><span>${pill('주의', 'warn')} 예산 과목 확인 · 인쇄 용역을 ‘사무관리비’로 선택 → 해결</span></li>
+        <li><span class="mono">11:05</span><span>${pill('주의', 'warn')} 결재선에 감사담당관 협조 누락 → 해결</span></li>
+      </ul>
+      <p class="dock-note">단순 주의와 즉시 재확인을 구분하고, 같은 경고를 반복해서 띄우지 않습니다. 실제 저장 차단은 기관 보안 도구와 연동했을 때만 동작합니다.</p></aside>`;
+  const rows = [['1', '박○○', '7105xx-2●●●●●●', '301-●●●●-●●●●-21', '생계·의료'], ['2', '김○○', '6402xx-1●●●●●●', '110-●●●-●●●●●2', '생계'], ['3', '이○○', '8810xx-2●●●●●●', '1002-●●●-●●●●47', '주거'], ['4', '최○○', '5512xx-1●●●●●●', '352-●●●●-●●●●-03', '의료']];
+  return `<div class="stage">
+    <div class="stage-top"><span class="stage-label">${ic('shield')}실시간 모드 · 위험 작업 사전 경고 (시뮬레이션)</span></div>
+    <div class="stage-grid">
+      <div class="lwin" aria-label="가상 수급자 관리 대장 창">
+        <div class="lwin-bar">${ic('grid')}수급자 관리 대장 (가상 업무 시스템)<span class="wb">_ □ ×</span></div>
+        <div class="lwin-menu"><span>파일</span><span>조회</span><span class="on">내보내기</span><span>도움말</span></div>
+        <div class="lwin-body">
+          <div class="lwin-title">2026년 수급자 현황 · 1,212건</div>
+          <div style="overflow-x:auto"><table class="lgrid"><tr><th>번호</th><th>성명</th><th>주민등록번호</th><th>계좌번호</th><th>급여 구분</th></tr>${rows.map(r => `<tr><td>${r[0]}</td><td class="k">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="k">${r[4]}</td></tr>`).join('')}</table></div>
+          <div class="lacts"><button class="lbtn" data-act="alDlg">엑셀 내보내기</button></div>
+        </div>
+        ${A.dlg && !A.saved ? `<div class="lmodal"><div class="lwin" role="dialog" aria-label="다른 이름으로 저장"><div class="lwin-bar">다른 이름으로 저장</div><div class="dlg-body">
+          <div class="dlg-row"><label for="alName">파일 이름</label><input type="text" id="alName" value="${esc(A.fname)}"></div>
+          <div class="dlg-row"><label for="alFolder">저장 위치</label><select id="alFolder" data-ch="alFolder" class="${hl('folder')}"><option value="desk" ${A.folder === 'desk' ? 'selected' : ''}>바탕화면</option><option value="secure" ${A.folder === 'secure' ? 'selected' : ''}>D:\\업무\\기초생활보장\\보안</option></select></div>
+          <div class="dlg-row"><span>암호</span><span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label class="ck ${hl('pw')}"><input type="checkbox" id="alPw" data-ch="alPw" ${A.pw ? 'checked' : ''}>파일 암호 설정</label><input type="password" id="alPwv" data-in="alPwv" value="${esc(A.pwv)}" placeholder="암호" ${A.pw ? '' : 'disabled'} style="width:120px" aria-label="파일 암호"></span></div>
+          <div class="lacts"><button class="lbtn" data-act="alCancel">취소</button><button class="lbtn pri" data-act="alSave">저장</button></div>
+        </div></div></div>` : ''}
+        ${A.saved ? `<div class="lmodal"><div class="lwin"><div class="lwin-bar">알림</div><div class="dlg-body"><p>D:\\업무\\기초생활보장\\보안 폴더에 암호를 걸어 저장했습니다. (가상)</p><div class="lacts"><button class="lbtn pri" data-act="alReset">확인</button></div></div></div></div>` : ''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:0">${card}${log}</div>
+    </div>
+    <div class="taskbar">${logo(20)}<span class="tk on">${ic('grid')}수급자 관리 대장</span><span class="tk">${ic('file')}기안문.hwpx</span><span class="clock">14:38</span></div>
+  </div>`;
+}
+SRC.privacy = { t: '「개인정보 보호법」 제29조 (안전조치의무)', meta: '현행 법령 · 요지', body: '<p>개인정보처리자는 개인정보가 분실·도난·유출·위조·변조 또는 훼손되지 않도록 내부 관리계획 수립, 접속기록 보관 등 대통령령으로 정하는 바에 따라 안전성 확보에 필요한 기술적·관리적 및 물리적 조치를 하여야 합니다.</p>' };
+SRC.plan = { t: '○○시 개인정보 내부관리계획 4.2 (가상)', meta: '기관 내부 규정 · 현행', body: '<p>4.2 고유식별정보가 포함된 파일을 PC에 저장할 때에는 암호를 설정하고 지정된 보안 폴더에 보관한다. 외부 반출은 부서장 승인을 받는다.</p>' };
+
+/* ================= senior: check-in ================= */
+function excerptHTML(f, masked) {
+  if (f.hidden) return '<p class="muted">기밀 의심 문서는 미리보기를 보여 주지 않습니다.</p>';
+  if (typeof f.ex === 'string') return esc(f.ex);
+  return f.ex.map(([t, k]) => k ? (masked ? `<span class="pii m">[${k}]</span>` : `<span class="pii" title="${k}">${esc(t)}</span>`) : esc(t)).join('');
+}
+function vCheckin() {
+  const C = S.ci;
+  const cnt = k => FILES.filter(f => C.d[f.id] === k).length;
+  const none = FILES.filter(f => !C.d[f.id]).length;
+  const a = FILES.find(f => f.id === C.a);
+  if (C.done) {
+    const sent = cnt('approve') + cnt('mask');
+    return `<div class="ph"><div><span class="eyebrow">주무관 B · 2026.10.11 17:32</span><h1>오늘 퇴근 전 검사를 마쳤습니다</h1><p>승인한 문서의 텍스트 조각과 메타데이터만 기관 내부 서버의 지식 저장소에 등록됩니다.</p></div><div class="acts"><button class="btn" data-act="ciRedo">${ic('undo')}다시 검사하기</button><a class="btn primary" href="#capture">시연 기록으로${ic('arrow')}</a></div></div>
+    <div class="result"><div class="r"><b>${sent}건</b><small>내부 서버 등록 대기 (가림 후 ${cnt('mask')}건 포함)</small></div><div class="r"><b>${cnt('exclude')}건</b><small>제외 · 등록하지 않음</small></div><div class="r"><b>${cnt('hold') + none}건</b><small>보류 · 내일 17:30에 다시 묻습니다</small></div></div>
+    <section class="card pad"><div class="card-h">${ic('server')}<h3>어디에 무엇이 남나요</h3></div><ul class="lst">
+      <li>${ic('folder')}<div class="t"><b>원문 파일 ${FILES.length}건</b><small>모두 이 PC의 허용 폴더에 그대로 남습니다. 중앙 서버로 원문을 보내지 않습니다.</small></div></li>
+      <li>${ic('eyeOff')}<div class="t"><b>개인정보 ${cnt('mask') ? '가림 적용' : '없음'}</b><small>PC에서 1차로 가리고, 서버 색인 전에 한 번 더 검사합니다. 가림이 실패한 것으로 의심되면 등록을 멈춥니다.</small></div></li>
+      <li>${ic('shieldOk')}<div class="t"><b>승인 철회 가능</b><small>나중에 승인을 철회하면 검색 색인과 임시 저장 결과에서도 지워집니다.</small></div></li></ul></section>`;
+  }
+  return `<div class="ph"><div><span class="eyebrow">주무관 B · 퇴근 전 검사 · 2026.10.11</span><h1>오늘 바뀐 문서 ${FILES.length}건</h1><p>허용 폴더 D:\\업무\\기초생활보장에서 오늘 수정된 문서입니다. 검사는 선택 사항이며, 거절해도 불이익이 없습니다.</p></div><div class="acts"><button class="btn" data-act="ciAll">${ic('sparkles')}권장대로 모두 선택</button></div></div>
+  <div class="os-toast" role="status">${logo(32)}<div><b>17:30 · 퇴근 전 검사 시간입니다</b><small>약 2분 · 응답하지 않은 문서는 보류하고 내일 다시 묻습니다</small></div></div>
+  <div class="ci">
+    <section class="card files" aria-label="검사할 문서">${FILES.map(f => `<div class="frow ${f.id === C.a ? 'on' : ''}">
+      <button class="fname-b" data-act="ciPick" data-k="${f.id}"><span class="ft">${f.k}</span><span style="min-width:0"><b>${esc(f.n)}</b><small>${f.folder} · 오늘 수정</small></span></button>
+      <div class="fcls">${pill(f.cls, f.c)}${f.pii ? `<span>${f.pii} 감지</span>` : ''}</div>
+      <div class="dec" role="group" aria-label="${esc(f.n)} 처리">${DEC.map(([k, t]) => `<button class="${k} ${C.d[f.id] === k ? 'on' : ''} ${f.rec === k ? 'rec' : ''}" data-act="ciSet" data-f="${f.id}" data-v="${k}" aria-pressed="${C.d[f.id] === k}" title="${f.rec === k ? 'AI 권장' : ''}">${t}</button>`).join('')}</div>
+    </div>`).join('')}</section>
+    <aside class="card ci-side" aria-label="문서 미리보기">
+      <div><span class="sec-k">미리보기 · PC 안에서만 표시</span><b style="display:block;font-size:14px">${esc(a.n)}</b></div>
+      <div class="state ${a.rec === 'exclude' || a.rec === 'hold' ? 'wait' : 'ok'}">${ic(a.rec === 'exclude' || a.rec === 'hold' ? 'info' : 'checkC')}<span><b>AI 권장: ${DEC.find(d => d[0] === a.rec)[1]}</b><br>${a.why}</span></div>
+      ${a.pii ? `<div class="seg" role="group" aria-label="가림 미리보기"><button data-act="ciMask" data-v="0" class="${C.masked ? '' : 'on'}">가림 전</button><button data-act="ciMask" data-v="1" class="${C.masked ? 'on' : ''}">가림 후</button></div>` : ''}
+      <div class="excerpt">${excerptHTML(a, C.masked)}</div>
+      ${a.pii ? `<p class="tp-note">가림 후 텍스트만 서버 색인으로 갑니다. “100% 탐지”를 약속하지 않으며, 누락이 의심되면 등록을 보류합니다.</p>` : ''}
+    </aside>
+  </div>
+  <div class="ci-sum"><div class="cnt"><span>승인 <b>${cnt('approve')}</b></span><span>가림 후 승인 <b>${cnt('mask')}</b></span><span>보류 <b>${cnt('hold')}</b></span><span>제외 <b>${cnt('exclude')}</b></span><span>미응답 <b>${none}</b></span></div><span class="sp"></span><span class="muted" style="font-size:12px">원문 반출 0건</span><button class="btn primary" data-act="ciDone">${ic('check')}검사 완료</button></div>`;
+}
+
+/* ================= senior: capture ================= */
+function miniScreen(i) {
+  const f = FRAMES[i];
+  const rows = [['메뉴', '계약 › 입찰공고 등록'], ['공고서 첨부', i >= 1 ? '입찰공고서_2026-0142.hwpx' : '선택된 파일 없음'], ['지역 제한', i >= 2 ? '○○시' : '선택'], ['낙찰자 결정', i >= 3 ? '적격심사 · 심사기준표.hwpx' : '선택']];
+  return `<div class="mini-scr"><div class="ms-bar">업무관리시스템 (가상) · 입찰공고 등록 · 프레임 ${i + 1}</div><div class="ms-body">
+    ${rows.map((r, ri) => `<div class="ms-row ${ri === f.row ? 'hit' : ''}"><span>${r[0]}</span><span>${r[1]}${ri === f.row ? '<i class="click-dot" aria-hidden="true"></i>' : ''}</span></div>`).join('')}
+    <div class="ms-row"><span>담당자</span><span>${i >= 1 ? `<span class="blur">김○○ 주무관 010-0000-0000</span><span class="mask-tag">${ic('eyeOff')}가림</span>` : '복지정책과'}</span></div>
+    ${i >= 3 ? `<div class="ms-row"><span>업체 정보</span><span><span class="blur">000-00-00000 · 000-0000-0000-00</span><span class="mask-tag">${ic('eyeOff')}가림</span></span></div>` : ''}
+  </div></div>`;
+}
+function vCapture() {
+  const P = S.cp, f = FRAMES[P.frame];
+  const masks = FRAMES.reduce((s, x) => s + x.masks, 0);
+  return `<div class="ph"><div><span class="eyebrow">주무관 B · 시연 기록 · 2026.08.21</span><h1>입찰공고 등록 (용역) 시연</h1><p>선임자가 업무 화면을 직접 시연하면, 개인정보를 가린 장면과 버튼·입력 조건을 절차 카드로 정리합니다.</p></div><div class="acts"><button class="btn" data-act="cpRec" ${P.recording ? 'disabled' : ''}>${ic('rec', 'rec')}${P.recording ? '녹화 중…' : '다시 시연 녹화'}</button></div></div>
+  <div class="cp">
+    <section class="card pad" style="display:flex;flex-direction:column;gap:14px">
+      <div class="card-h" style="margin:0"><h3>${P.recording ? '녹화하는 중' : `프레임 ${P.frame + 1} · ${f.t}`}</h3><span class="sp"></span>${pill(`${ic('eyeOff')}개인정보 ${masks}곳 가림`, 'blue')}</div>
+      ${P.recording ? `<div class="mini-scr shimmer" style="height:240px" aria-busy="true"></div>` : miniScreen(P.frame)}
+      ${!P.recording ? `<div class="chips"><span class="tag">${ic('pointer')}동작: ${f.act}</span>${f.note ? `<span class="tag">${ic('eyeOff')}${f.note}</span>` : ''}</div>` : ''}
+      <div class="strip" role="group" aria-label="프레임 목록">${FRAMES.map((x, i) => i < P.recIdx ? `<button class="fr ${i === P.frame && !P.recording ? 'on' : ''}" data-act="cpFrame" data-i="${i}"><small>${String(i + 1).padStart(2, '0')}</small><b>${x.t}</b>${x.masks ? pill(`가림 ${x.masks}`, 'blue') : ''}</button>` : `<div class="fr ghost shimmer"><small>${String(i + 1).padStart(2, '0')}</small><b>기록 대기</b></div>`).join('')}</div>
+      <p class="tp-note">캡처 버퍼 단계에서 이름·연락처·계좌번호 같은 개인정보를 찾아 가린 뒤 저장합니다. 가림이 실패한 것으로 의심되는 프레임은 저장하지 않습니다.</p>
+    </section>
+    <aside class="card pcard" aria-label="절차 카드 초안">
+      <div style="display:flex;gap:6px;align-items:center">${pill('절차 카드 초안', 'blue')}${P.approved ? pill('승인됨', 'ok') : pill('승인 대기', 'warn')}</div>
+      <h3>입찰공고 등록 (용역)</h3>
+      <p class="muted" style="font-size:12px">적용 화면: 업무관리시스템 › 계약 › 입찰공고 등록</p>
+      <ol class="pc-steps">${FRAMES.slice(1).map(x => `<li><span><b>${x.t}</b><small>${x.act}</small></span></li>`).join('')}<li><span><b>최종 확인 후 제출</b><small>후임자가 직접 제출 · 안내는 제출 버튼을 누르지 않음</small></span></li></ol>
+      <div><label class="sec-k" for="cpEx">예외 조건</label><textarea id="cpEx" rows="3" data-in="cpEx" ${P.approved ? 'disabled' : ''}>${esc(P.ex)}</textarea></div>
+      ${P.approved ? `<div class="state ok">${ic('checkC')}<span>승인했습니다. 이제 후임자의 화면 단계 안내와 모의 실습에 쓰입니다.</span></div><a class="btn primary" href="#guide">후임자 화면에서 보기${ic('arrow')}</a><button class="btn ghost sm" data-act="cpUnapprove">승인 철회</button>` : `<div class="state wait">${ic('info')}<span>승인 전에는 후임자 화면 안내와 모의 실습에 쓰지 않습니다.</span></div><button class="btn primary" data-act="cpApprove" ${P.recording ? 'disabled' : ''}>${ic('shieldOk')}검토하고 승인</button>`}
+    </aside>
+  </div>`;
+}
+
+/* ================= senior: review ================= */
+function vReview() {
+  const a = REVIEWS.find(r => r.id === S.rv.a) || REVIEWS[0];
+  const draft = S.rv.draft[a.id] ?? '';
+  return `<div class="ph"><div><span class="eyebrow">주무관 B · 확인 요청함</span><h1>후임자가 기록에서 답을 찾지 못한 질문</h1><p>답하면 출처와 함께 승인된 기록이 되어, 다음 후임자도 같은 답을 받습니다.</p></div><div class="acts"><button class="toggle" data-act="present" aria-pressed="${S.present}"><span class="sw"></span>${S.present ? '질문 받는 중 (주 2회)' : '부재 · 팀 담당자에게 전달'}</button></div></div>
+  <div class="rv">
+    <div class="rc-list">${REVIEWS.map(r => `<button class="rv-i ${r.id === a.id ? 'on' : ''}" data-act="rvPick" data-k="${r.id}"><span class="rt">${r.st === 'open' ? pill('답변 대기', 'warn') : r.st === 'answered' ? pill('기록에 추가됨', 'ok') : pill('팀 담당자에게 전달')}<small>${r.when}</small></span><b>${esc(r.q)}</b><small>${r.from}</small></button>`).join('')}</div>
+    <article class="card rv-d"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${pill('신임 주무관 A의 질문', 'blue')}<span class="muted" style="font-size:12px">${a.from} · ${a.when}</span></div>
+      <h2>${esc(a.q)}</h2>
+      <div class="found">${ic('info')}<span><b>AI가 찾은 자료</b><br>${a.found}</span></div>
+      ${a.st === 'answered' ? `<div class="state ok">${ic('checkC')}<span><b>승인된 답변</b><br>${esc(a.a)}</span></div><p class="tp-note">업무 기록에 추가되어 이후 같은 질문에는 이 답과 출처가 함께 나갑니다.</p>`
+      : a.st === 'forwarded' ? `<div class="state wait">${ic('users')}<span>팀 담당자에게 전달했습니다. 답이 확정되기 전까지 후임자 화면에는 ‘담당자 확인 필요’로 남습니다.</span></div>`
+      : `<div><label class="sec-k" for="rvAns">답변</label><textarea id="rvAns" rows="4" data-in="rvAns" placeholder="처리했던 방식과 이유를 적어 주세요">${esc(draft)}</textarea></div>
+      <div><label class="sec-k" for="rvBasis">근거</label><select id="rvBasis" data-ch="rvBasis"><option>결재 문서 연결</option><option>지침·규정 연결</option><option>경험 메모 (근거 문서 없음 · 표시됨)</option></select></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="rvAnswer">${ic('check')}답변하고 기록에 추가</button><button class="btn" data-act="rvDraft">${ic('sparkles')}AI 초안 불러오기</button><button class="btn ghost" data-act="rvForward">모름 · 팀 담당자에게 넘기기</button></div>
+      <p class="tp-note">AI 초안은 찾은 자료를 정리한 것일 뿐입니다. 선임자가 고치고 승인해야 기록이 됩니다.</p>`}
+    </article>
+  </div>`;
+}
+
+const VIEWS = { home: vHome, curriculum: vCurriculum, lesson: vLesson, sandbox: vSandbox, templates: vTemplates, records: vRecords, guide: vGuide, widget: vWidget, alert: vAlert, checkin: vCheckin, capture: vCapture, review: vReview };
+
+/* ================= after-render hooks ================= */
+const AFTER = {
+  sandbox() {
+    if (S.sb.active === 's1' && !S.sb.s1.done) every(() => { S.callSec++; const el = $('#callTime'); if (el) el.textContent = fmtSec(S.callSec); }, 1000);
+  },
+  lesson() {
+    const m = $('#lsMsgs'); if (m) m.scrollTop = m.scrollHeight;
+    if (S.focus === 'quiz') { S.focus = null; const q = $('#quiz'); if (q) q.scrollIntoView({ block: 'start' }); }
+  },
+  widget() { const m = $('#wMsgs'); if (m) m.scrollTop = m.scrollHeight; },
+  capture() {
+    if (S.cp.recording) later(function step() {
+      S.cp.recIdx++;
+      if (S.cp.recIdx >= FRAMES.length) { S.cp.recording = false; S.cp.frame = 0; toast('시연 녹화를 마쳤습니다 · 개인정보 3곳을 가렸습니다'); }
+      update();
+    }, 900);
+  },
+  templates() { if (S.focus) { const el = $(S.focus); S.focus = null; if (el) { el.focus(); el.scrollIntoView({ block: 'center' }); } } },
+  alert() { if (S.focus) { const el = $(S.focus); S.focus = null; if (el) el.focus(); } },
+};
+
+/* ================= actions ================= */
+function addReview(q, from) {
+  if (REVIEWS.some(r => r.q === q)) return false;
+  REVIEWS.unshift({ id: 'u' + Date.now(), q, from, when: '10.11 ' + new Date().toTimeString().slice(0, 5), found: '승인된 기록과 현행 규정에서 근거를 찾지 못했습니다.', st: 'open', mine: true });
+  return true;
+}
+const A = {
+  mode(t) { go(t.dataset.v === 'senior' ? 'checkin' : 'home'); },
+  openSide() { S.sideOpen = true; update(); },
+  closeSide() { S.sideOpen = false; update(); },
+  dismissHow() { S.how[route()] = true; update(); },
+  showHow() { S.how[route()] = false; update(); },
+  scrollTo(t) { const el = document.getElementById(t.dataset.id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+  bell() { toast(S.present ? '전임자 B 주무관이 질문 1건에 답했습니다 · 업무 기록에 추가됨' : '전임자 부재 중 · 팀 담당자가 질문 1건을 확인 중입니다', 'info'); },
+  search() { const v = ($('#q') || {}).value || ''; S.rec.q = v.trim(); S.rec.f = '전체'; go('records'); },
+  src(t) { const s = SRC[t.dataset.k]; if (s) sheet(s.t, `<p class="meta">${s.meta}</p><div class="doc">${s.body}</div><p class="meta">원문 위치와 시행일을 함께 보관합니다. 열람 권한이 없는 자료는 이 창에도 보이지 않습니다.</p>`); },
+  closeSheet,
+  present() { S.present = !S.present; toast(S.present ? '전임자 참여: 질문을 전임자에게 보냅니다' : '전임자 부재: 승인된 기록으로 학습하고, 확정 못 한 답은 팀 담당자에게 연결합니다', 'info'); update(); },
+  /* curriculum */
+  replan() { toast('담당 업무와 학습 기록을 반영해 다시 편성했습니다 · 변경된 항목 없음', 'info'); },
+  openItem(t) { const i = +t.dataset.i; if (i === 3) { if (!S.cur.done[2]) { toast('사례 복습의 이해 확인을 마치면 열립니다', 'info'); return; } S.focus = 'quiz'; } go('lesson'); },
+  futureItem() { toast('예정 항목입니다 · 시연에서는 1주차 항목을 체험할 수 있습니다', 'info'); },
+  /* lesson */
+  lsPick(t) { if (S.ls.checked) return; S.ls.ans[+t.dataset.q] = +t.dataset.o; update(); },
+  lsCheck() { const L = S.ls; L.checked = true; const wrong = LESSON.quiz.findIndex((q, i) => L.ans[i] !== q.a); L.passed = wrong < 0; L.weak = wrong < 0 ? null : LESSON.quiz[wrong].step; if (L.passed) { S.cur.done[2] = true; toast('이해 확인 완료 · 1주차 확인 퀴즈가 열렸습니다'); } update(); },
+  lsRetry() { S.ls.checked = false; S.ls.ans = {}; update(); },
+  lsAsk(t) { const q = t.dataset.q; const k = lsRoute(q); S.ls.chat.push({ w: 'me', x: q }, { w: 'bot', k, q }); update(); },
+  lsSend() { const el = $('#lsIn'); const q = (el && el.value || '').trim(); if (!q) return; const k = lsRoute(q); S.ls.chat.push({ w: 'me', x: q }, { w: 'bot', k, q }); update(); const n = $('#lsIn'); if (n) n.focus(); },
+  lsReq(t) { const q = t.dataset.q || '확인이 필요한 질문'; const m = [...S.ls.chat].reverse().find(x => x.w === 'bot' && LS_ANS[x.k].need && !x.req); if (m) m.req = true; addReview(q, '사례 학습 · 전입자 판정'); toast(S.present ? '전임자 B 주무관에게 확인을 요청했습니다 · 선임자 화면 ‘확인 요청함’에서 볼 수 있습니다' : '팀 담당자에게 확인을 요청했습니다'); update(); },
+  /* sandbox */
+  sbPick(t) { S.sb.active = t.dataset.k; update(); },
+  sbHint() { const st = S.sb[S.sb.active]; st.hint = Math.min(st.hint + 1, SCN[S.sb.active].hints.length); update(); },
+  sbRefs() { const sc = SCN[S.sb.active]; sheet('참고자료', `<p class="meta">이 시나리오와 연결된 승인 기록입니다.</p>${sc.refs.map(r => `<div class="doc"><b>${r}</b><p class="meta">전임자 B 주무관 · 승인된 기록</p></div>`).join('')}${S.sb.active === 's1' ? `<div class="doc">${SRC.notice.body}</div>` : ''}`); },
+  sbSubmit() {
+    const id = S.sb.active, st = S.sb[id];
+    if (!st.answer.trim()) { toast('답변 원문을 먼저 적어 주세요', 'warn'); const el = $('#sbAns'); if (el) el.focus(); return; }
+    st.submitted = true;
+    const res = evalScn(id);
+    if (res.every(r => r === 'ok')) { st.done = true; toast('모든 기준을 충족했습니다 · 커리큘럼에 반영했습니다'); }
+    else toast(`${res.filter(r => r === 'ok').length}/${res.length} 충족 · 오른쪽 보완 방법을 확인하세요`, 'warn');
+    update();
+  },
+  sbReset() { const id = S.sb.active; S.sb[id] = { answer: SCN[id].draft, law: SCN[id].law, submitted: false, hint: 0, done: false }; if (id === 's1') S.callSec = 192; update(); },
+  sbReview() { addReview('이 민원 답변이 적절한지 검토해 주세요: ' + SCN[S.sb.active].t, '모의 학습'); toast('답변과 채점 결과를 담당자 검토로 넘겼습니다'); },
+  /* templates */
+  tplOpen(t) { S.tpl.active = t.dataset.k; update(); },
+  tplPick(t) { S.tpl.sel = t.dataset.k; S.focus = t.dataset.k === 'people' ? '#f-p0' : '#f-' + t.dataset.k; update(); },
+  tplGo(t) { S.tpl.sel = t.dataset.k; S.focus = t.dataset.k === 'people' ? '#f-p0' : '#f-' + t.dataset.k; update(); },
+  tplConfirm() { S.tpl.conf.dept = true; if (S.tpl.issues) S.tpl.issues = tplCheck(); if (S.tpl.issues && !S.tpl.issues.length) S.tpl.issues = null; toast('관계 부서 값을 확인했습니다'); update(); },
+  tplDownload() {
+    const iss = tplCheck(); const T = S.tpl;
+    if (iss.length) { T.issues = iss; T.status = 'draft'; T.sel = iss[0].k; S.focus = iss[0].k === 'people' ? '#f-p0' : '#f-' + iss[0].k; toast(`다운로드 전 점검 ${iss.length}건 · 빈칸은 임의로 채우지 않습니다`, 'warn'); }
+    else { T.issues = null; T.status = 'generated'; toast('점검 완료 · 사무인계인수서.hwpx를 만들었습니다 (시연 환경이라 파일은 저장하지 않습니다)'); }
+    update();
+  },
+  tplRequest() { if (S.tpl.status !== 'generated' && S.tpl.status !== 'requested') { A.tplDownload(); if (S.tpl.status !== 'generated') return; } S.tpl.status = 'requested'; toast('결재 요청을 기록했습니다 · 결재 완료와는 따로 표시합니다'); update(); },
+  /* records */
+  recF(t) { S.rec.f = t.dataset.v; update(); },
+  recPick(t) { S.rec.a = t.dataset.k; update(); },
+  recClear() { S.rec.q = ''; update(); },
+  /* guide */
+  gAttach(t) {
+    const k = t.dataset.k, G = S.g;
+    if (k === 'file') G.v.file = '입찰공고서_2026-0142.hwpx'; else G.v.crit = '적격심사_기준표_2026.hwpx';
+    G.early = ''; update();
+  },
+  gNext() { const G = S.g; if (!gValid(G.step)) return; G.st[G.step] = 'done'; const nx = G.st.findIndex((s, i) => s !== 'done'); G.step = nx < 0 ? 3 : nx; G.st[G.step] = 'now'; G.early = ''; update(); },
+  gPrev() { const G = S.g; if (G.step === 0) return; if (G.st[G.step] === 'now') G.st[G.step] = gValid(G.step) ? 'done' : 'todo'; G.step--; G.st[G.step] = 'now'; G.early = ''; update(); },
+  gGo(t) { const G = S.g, i = +t.dataset.i; if (G.paused || G.fail || G.submitted) return; if (G.st[i] === 'todo' && i > G.st.findIndex(s => s !== 'done')) { toast('앞 단계를 먼저 확인하세요', 'info'); return; } if (G.st[G.step] === 'now') G.st[G.step] = gValid(G.step) ? 'done' : 'todo'; G.step = i; G.st[i] = 'now'; update(); },
+  gSubmit() {
+    const G = S.g;
+    if (G.manual || G.paused) { G.submitted = true; update(); return; }
+    if (G.step !== 3 || G.st.slice(0, 3).some(s => s !== 'done')) { const left = GSTEPS.filter((s, i) => i < 3 && G.st[i] !== 'done').map(s => s.t); G.early = `아직 확인하지 않은 단계가 있습니다: ${left.join(', ')}`; toast('제출 전에 확인할 단계가 남았습니다', 'warn'); update(); return; }
+    G.st[3] = 'done'; G.submitted = true; toast('후임자가 직접 제출했습니다 · 안내를 마칩니다'); update();
+  },
+  gPause() { S.g.paused = !S.g.paused; update(); },
+  gFail() { S.g.fail = true; update(); },
+  gRetry() { S.g.fail = false; toast('화면을 다시 인식했습니다 · 이어서 안내합니다'); update(); },
+  gManual() { S.g.fail = false; S.g.manual = true; update(); },
+  gAuto() { S.g.manual = false; update(); },
+  gReset() { S.g = { step: 0, st: ['now', 'todo', 'todo', 'todo'], v: { file: '', region: '', method: '', crit: '', price: '18,000,000' }, paused: false, fail: false, manual: false, mc: [false, false, false, false], submitted: false, early: '' }; update(); },
+  /* widget */
+  wToggle() { S.w.open = !S.w.open; update(); },
+  wAsk(t) { wQuestion(t.dataset.q); },
+  wSend() { const el = $('#wIn'); const q = (el && el.value || '').trim(); if (q) wQuestion(q); },
+  wInsert() { S.w.pend = true; update(); },
+  wInsertNo() { S.w.pend = false; update(); },
+  wInsertOk() { S.w.pend = false; S.w.inserted = true; toast('기안문 커서 위치에 1문장을 추가했습니다'); update(); },
+  wUndo() { S.w.inserted = false; update(); },
+  wClar(t) { const W = S.w; const c = W.msgs.find(m => m.k === 'clar' && !m.done); if (c) c.done = true; W.msgs.push({ w: 'me', x: t.dataset.v }, { w: 'bot', k: 'a2' }); W.phase = 'a2'; update(); },
+  wReq() { S.w.reqd = true; addReview('가족이 위임장을 갖고 대리 신청해도 수수료 면제인가요?', '질문 위젯 · 수수료 면제 기안'); toast(S.present ? '질문·근거·확인할 쟁점을 전임자 B 주무관에게 보냈습니다' : '질문·근거·확인할 쟁점을 팀 담당자에게 보냈습니다'); update(); },
+  /* alert */
+  alDlg() { S.al.dlg = true; update(); },
+  alCancel() { S.al.dlg = false; update(); },
+  alSave() {
+    const A2 = S.al; const n = $('#alName'); if (n) A2.fname = n.value;
+    const rs = alResolve();
+    if (rs[0].st === 'ok' && rs[1].st === 'ok') { A2.saved = true; A2.dlg = false; toast('조건을 확인하고 저장했습니다'); }
+    else { A2.warned = true; A2.closed = false; A2.checked = false; }
+    update();
+  },
+  alHl(t) { S.al.hl = t.dataset.k; S.al.dlg = true; S.focus = t.dataset.k === 'pw' ? '#alPw' : '#alFolder'; update(); },
+  alRecheck() { S.al.checked = true; const fixed = alResolve().filter(r => r.st === 'ok').length; toast(fixed === 2 ? '해결 2건 · 남은 1건은 담당자 확인으로 남깁니다' : `아직 ${2 - fixed}건이 남았습니다`, fixed === 2 ? 'ok' : 'warn'); update(); },
+  alClose() { S.al.closed = true; toast('경고를 닫았습니다 · 닫는 것만으로는 해결로 처리하지 않습니다', 'info'); update(); },
+  alOpen() { S.al.closed = false; update(); },
+  alFp() { S.al.fp = true; update(); },
+  alFpSend() { S.al.fpSent = true; update(); },
+  alReq() { S.al.reqd = true; toast('반출 목적 승인 여부를 담당자에게 확인 요청했습니다'); update(); },
+  alReset() { S.al = { dlg: true, fname: '수급자_명단_2026_전체.xlsx', folder: 'desk', pw: false, pwv: '', warned: false, checked: false, closed: false, fp: false, fpSent: false, saved: false, reqd: false, hl: '' }; update(); },
+  /* checkin */
+  ciPick(t) { S.ci.a = t.dataset.k; S.ci.masked = false; update(); },
+  ciSet(t) { S.ci.d[t.dataset.f] = t.dataset.v; S.ci.a = t.dataset.f; update(); },
+  ciAll() { FILES.forEach(f => { S.ci.d[f.id] = f.rec; }); toast('AI 권장대로 선택했습니다 · 검사 완료 전에 바꿀 수 있습니다', 'info'); update(); },
+  ciMask(t) { S.ci.masked = t.dataset.v === '1'; update(); },
+  ciDone() { S.ci.done = true; toast('검사를 마쳤습니다 · 원문은 PC에 남고 승인한 내용만 등록됩니다'); update(); },
+  ciRedo() { S.ci.done = false; update(); },
+  /* capture */
+  cpFrame(t) { S.cp.frame = +t.dataset.i; update(); },
+  cpRec() { S.cp.recording = true; S.cp.recIdx = 0; S.cp.approved = false; update(); },
+  cpApprove() { S.cp.approved = true; toast('절차 카드를 승인했습니다 · 후임자 화면 안내에 쓰입니다'); update(); },
+  cpUnapprove() { S.cp.approved = false; toast('승인을 철회했습니다 · 후임자 안내와 검색 색인에서 빠집니다', 'info'); update(); },
+  /* review */
+  rvPick(t) { S.rv.a = t.dataset.k; update(); },
+  rvDraft() { const a = REVIEWS.find(r => r.id === S.rv.a); const d = { q2: '도 감사 회신은 기관 표준 ‘결재 기안문’ 양식에 보정 내역 표를 붙여 보냈습니다. 2025 회신 문서를 참고하세요.', q4: '지침 기준에 더해, 소득 변동 신고가 잦은 가구와 장기 미변동 가구를 먼저 골랐습니다.' }[a.id] || '찾은 자료를 바탕으로 처리 방식을 적어 주세요.'; S.rv.draft[a.id] = d; update(); },
+  rvAnswer() {
+    const a = REVIEWS.find(r => r.id === S.rv.a); const txt = (S.rv.draft[a.id] || '').trim();
+    if (!txt) { toast('답변을 먼저 적어 주세요', 'warn'); const el = $('#rvAns'); if (el) el.focus(); return; }
+    a.st = 'answered'; a.a = txt;
+    SRC['ans' + a.id] = { t: '선임자 답변 · ' + a.q, meta: '2026.10.11 · 주무관 B 승인 · 근거: ' + (S.rv.basis[a.id] || '결재 문서 연결'), body: `<p>${esc(txt)}</p>` };
+    RECORDS.unshift({ id: 'n' + a.id, isNew: true, type: '민원 대응', t: a.q, prob: a.q, why: '후임자 질문에 선임자가 답한 내용', how: [txt], exc: '기관 규정이 바뀌면 다시 검토', src: [['ans' + a.id, '선임자 답변 (2026.10.11)']], dept: '복지정책과', rev: '2026.10.11', acl: '기초생활보장 담당' });
+    toast('승인된 답변을 업무 기록에 추가했습니다 · 후임자에게 알렸습니다'); update();
+  },
+  rvForward() { const a = REVIEWS.find(r => r.id === S.rv.a); a.st = 'forwarded'; toast('팀 담당자에게 넘겼습니다', 'info'); update(); },
+};
+function wQuestion(q) {
+  const W = S.w;
+  W.msgs.push({ w: 'me', x: q });
+  if (/대리|위임|가족/.test(q)) { W.msgs.push({ w: 'bot', k: 'clar' }); W.phase = 'clar'; }
+  else if (/수수료|면제/.test(q)) { W.msgs.push({ w: 'bot', k: 'a1' }); if (W.phase === 'start') W.phase = 'a1'; }
+  else W.msgs.push({ w: 'bot', k: 'gen' });
+  update();
+  const n = $('#wIn'); if (n) n.focus();
+}
+
+/* inputs that must not re-render (keep focus) */
+const IN = {
+  sbLaw(t) { S.sb[S.sb.active].law = t.value; },
+  sbAns(t) { S.sb[S.sb.active].answer = t.value; },
+  tplV(t) {
+    const k = t.dataset.k, T = S.tpl;
+    if (k === 'people') { T.v.people[+t.dataset.i] = t.value; const c = $('#cell-p' + t.dataset.i); if (c) c.textContent = t.value; }
+    else { T.v[k] = t.value; const c = $('#cell-' + k); if (c) c.innerHTML = cellText(k); }
+    if (T.status !== 'draft') { T.status = 'draft'; const s = $('#tplStatus'); if (s) s.innerHTML = tplStatusHTML(); }
+  },
+  alPwv(t) { S.al.pwv = t.value; },
+  cpEx(t) { S.cp.ex = t.value; },
+  rvAns(t) { S.rv.draft[S.rv.a] = t.value; },
+};
+const CH = {
+  gSel(t) {
+    const G = S.g, k = t.dataset.k; G.v[k] = t.value;
+    if (k === 'method' && t.value !== '적격심사') G.v.crit = '';
+    const i = GSTEPS.findIndex(s => s.k === k);
+    if (G.st[i] === 'done' && !gValid(i)) G.st[i] = 'recheck';
+    G.early = ''; update();
+  },
+  gPrice(t) {
+    const G = S.g; const n = parseInt(t.value.replace(/[^0-9]/g, ''), 10) || 0; G.v.price = n.toLocaleString('ko-KR');
+    if (G.st[1] === 'done' || G.v.region) { if (G.v.region !== recRegion()) { if (G.st[1] === 'done') G.st[1] = 'recheck'; toast('추정가격이 바뀌어 지역 제한을 다시 확인해야 합니다', 'warn'); } }
+    update();
+  },
+  gMc(t) { S.g.mc[+t.dataset.i] = t.checked; },
+  alPw(t) { S.al.pw = t.checked; if (!t.checked) S.al.pwv = ''; S.al.hl = ''; S.focus = t.checked ? '#alPwv' : null; update(); },
+  alFolder(t) { S.al.folder = t.value; S.al.hl = ''; update(); },
+  rvBasis(t) { S.rv.basis[S.rv.a] = t.value; },
+  tplDate() { if (S.tpl.issues) { S.tpl.issues = tplCheck(); if (!S.tpl.issues.length) S.tpl.issues = null; } update(); },
+};
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]');
+  if (!t) return;
+  const fn = A[t.dataset.act];
+  if (fn) { e.preventDefault(); fn(t, e); }
+});
+document.addEventListener('input', e => { const t = e.target.closest('[data-in]'); if (t && IN[t.dataset.in]) IN[t.dataset.in](t); });
+document.addEventListener('change', e => { const t = e.target.closest('[data-ch]'); if (t && CH[t.dataset.ch]) CH[t.dataset.ch](t); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if ($('#sheet-root').innerHTML) closeSheet(); else if (S.sideOpen) { S.sideOpen = false; update(); } return; }
+  if (e.key === 'Enter' && !e.isComposing) { const t = e.target.closest('[data-enter]'); if (t && A[t.dataset.enter]) { e.preventDefault(); A[t.dataset.enter](t); } }
+});
+window.addEventListener('hashchange', render);
+render();
+})();
+</script>
+</body>
+</html>
