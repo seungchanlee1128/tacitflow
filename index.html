@@ -258,11 +258,12 @@ ul,ol{margin:0;padding:0;list-style:none}
 /* ---------- lesson ---------- */
 .lesson{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
 .steps{display:flex;flex-direction:column;counter-reset:st}
-.steps li{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;padding-bottom:18px}
-.steps li::before{counter-increment:st;content:counter(st);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:13px;z-index:1}
+.steps li{position:relative;display:flex;gap:12px;align-items:flex-start;padding-bottom:18px}
+.steps li::before{counter-increment:st;content:counter(st);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:13px;flex:none;z-index:1}
 .steps li::after{content:"";position:absolute;left:14.5px;top:30px;bottom:0;width:1px;background:var(--line-2)}
 .steps li:last-child::after{display:none}
 .steps li.weak::before{background:var(--warn);color:var(--surface)}
+.steps li>div{flex:1;min-width:0}
 .steps b{display:block;font-size:14.5px;margin-top:4px}
 .steps p{font-size:13px;color:var(--fg-2);margin:3px 0 8px}
 .weak-note{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--warn);margin-bottom:6px}
@@ -803,6 +804,7 @@ ul,ol{margin:0;padding:0;list-style:none}
   .scrim.open{display:block;position:fixed;inset:0;background:var(--scrim);z-index:35}
   .menu{display:inline-grid}
   .search{display:none}
+  .t-nav-sub{display:none}
   .lesson,.rc,.rv{grid-template-columns:minmax(0,1fr)}
   .chatp{position:static;max-height:none}
   .t-gap{grid-template-columns:minmax(0,1fr)}
@@ -813,30 +815,26 @@ ul,ol{margin:0;padding:0;list-style:none}
   .crumb{font-size:12px}
   .view{padding:12px 12px 120px;gap:14px}
   .sb,.tp{grid-template-columns:minmax(0,1fr)}
-  .grid-2,.grid-3{grid-template-columns:minmax(0,1fr)}
-  .how{grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 12px}
-  .how-why{gap:6px;font-size:12.5px}
-  .how-steps{font-size:11.5px;gap:6px}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:minmax(0,1fr)}
+  
+  /* Banner (how) */
+  .how{display:flex;flex-direction:column;gap:8px;padding:12px 34px 12px 12px;position:relative}
+  .how-why{display:flex;gap:8px;align-items:flex-start;width:100%}
+  .how-why p{flex:1;min-width:0;font-size:12.5px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
+  .how-steps{display:flex;flex-direction:column;gap:6px;width:100%}
+  .how-steps li{display:flex;align-items:flex-start;gap:6px;font-size:11.5px;word-break:keep-all;overflow-wrap:anywhere}
+  .how-steps li b{margin-top:1px}
+  .how .icon-btn{position:absolute;top:8px;right:8px}
+
   .frow{grid-template-columns:minmax(0,1fr);padding:10px 12px}
   .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
   .result{grid-template-columns:minmax(0,1fr)}
   .lost-l{grid-template-columns:minmax(0,1fr)}
-  .art{grid-template-columns:minmax(0,1fr);gap:12px}
-  .art-folder{max-width:280px;margin:0 auto}
-  .art-arrow{transform:rotate(90deg);margin:6px auto}
-  .art-card{padding:12px;max-width:100%}
-  .art-tags{padding-left:0;justify-content:center}
   
-  /* Tourbar */
-  .tourbar{left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));max-width:none;gap:4px;padding:6px 8px;border-radius:12px}
-  .tb-dots{display:none}
-  .tb-k{font-size:11px}
-  .tb-prev,.tb-next{height:32px;padding:0 8px;font-size:12px;border-radius:7px}
-  .tb-next span{max-width:38vw;overflow:hidden;text-overflow:ellipsis}
-
-  /* Tour Landing */
+  /* Tour Landing & Art */
   .tour{padding-inline:12px;padding-block:0 60px}
   .t-nav{height:52px}
+  .t-nav-sub{display:none}
   .t-hero{padding-block:24px 36px;gap:24px}
   .t-copy h1{font-size:26px;line-height:1.25}
   .t-lead{font-size:13.5px}
@@ -847,26 +845,49 @@ ul,ol{margin:0;padding:0;list-style:none}
   .gap-col{padding:14px}
   .sg{gap:12px}
   .sgc{padding:14px}
+  .art{grid-template-columns:minmax(0,1fr);gap:12px}
+  .art-folder{max-width:280px;margin:0 auto}
+  .art-arrow{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;margin:8px auto;transform:none}
+  .art-arrow .ic{transform:rotate(90deg);width:22px;height:22px}
+  .art-card{padding:12px;max-width:100%}
+  .art-tags{padding-left:0;justify-content:center}
+
+  /* Tourbar */
+  .tourbar{left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));max-width:none;gap:4px;padding:6px 8px;border-radius:12px}
+  .tb-dots{display:none}
+  .tb-k{font-size:11px}
+  .tb-prev,.tb-next{height:32px;padding:0 8px;font-size:12px;border-radius:7px}
+  .tb-next span{max-width:38vw;overflow:hidden;text-overflow:ellipsis}
 
   /* Real-time Desktop Stage */
-  .stage{padding:10px 10px 48px;border-radius:14px}
-  .stage-top{gap:6px;margin-bottom:10px}
+  .stage{padding:10px 10px 48px;border-radius:14px;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
+  .stage-top{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px;max-width:100%}
   .stage-label{font-size:11px;padding:4px 8px;max-width:100%}
-  .lwin-bar{height:26px;font-size:11px;padding:0 8px}
-  .lwin-menu{font-size:11px;gap:10px;padding:4px 8px;overflow-x:auto}
-  .lwin-body{padding:8px}
+  .stage-grid{display:flex;flex-direction:column;gap:14px;width:100%;max-width:100%;min-width:0}
+  .stage-grid > .lwin{width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
+  .stage-grid > div{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+  .lwin-bar{height:26px;font-size:11px;padding:0 8px;max-width:100%}
+  .lwin-menu{font-size:11px;gap:10px;padding:4px 8px;overflow-x:auto;max-width:100%}
+  .lwin-body{padding:8px;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
+  .lwin-body > div{max-width:100%;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .ltable{min-width:0;width:100%;font-size:12px}
-  .ltable th{width:90px;padding:6px 6px;font-size:11.5px}
-  .ltable td{padding:6px 6px}
+  .ltable th{width:86px;padding:6px 4px;font-size:11.5px}
+  .ltable td{padding:6px 4px}
   .ltable input[type="text"],.ltable select{font-size:13px;max-width:100%}
   .lf{flex-wrap:wrap;gap:4px}
   #gPrice{width:90px!important}
   .lbtn{height:26px;padding:0 8px;font-size:12px}
-  .tf-bubble{margin-left:0;max-width:100%;padding:10px 12px;font-size:12.5px}
+  .lacts{display:flex;justify-content:flex-end;gap:6px;width:100%;box-sizing:border-box}
+  
+  /* Bubble popup in guide */
+  .tf-bubble{margin-left:0;max-width:100%;padding:10px 12px;font-size:12px;box-sizing:border-box}
   .tf-bubble::before{left:16px}
-  .tf-b-f{flex-wrap:wrap;gap:6px;justify-content:space-between}
-  .src-s{font-size:11px;max-width:100%}
-  .taskbar{height:34px;padding:0 8px;gap:6px;font-size:11px}
+  .tf-b-f{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between}
+  .tf-b-f .sp{display:none}
+  .tf-b-f .src-s{width:100%;font-size:11px;margin-bottom:2px}
+  .tf-b-f .btn{flex:1;min-width:80px;text-align:center;justify-content:center}
+  
+  .taskbar{height:34px;padding:0 8px;gap:6px;font-size:11px;width:100%;max-width:100%;box-sizing:border-box}
   .taskbar .tk{padding:2px 6px;font-size:11px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .taskbar .clock{font-size:11px;margin-left:auto}
 
@@ -883,10 +904,22 @@ ul,ol{margin:0;padding:0;list-style:none}
   .editor{padding:14px 12px;min-height:220px;font-size:12.5px;line-height:1.7}
   .fw-panel{max-width:100%;border-radius:12px}
   .fw-msgs{padding:10px;min-height:140px}
-  .lgrid{font-size:11px;min-width:360px}
-  .dlg-row{flex-wrap:wrap;gap:4px}
-  .al-dlg{width:calc(100% - 16px);max-width:100%}
+  .lgrid{font-size:11px;min-width:0;width:100%}
+  .lmodal{position:absolute;inset:0;padding:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-sizing:border-box;z-index:5}
+  .lmodal .lwin{width:calc(100% - 12px);max-width:300px;margin:0 auto;box-sizing:border-box}
+  .dlg-body{padding:10px 8px;box-sizing:border-box}
+  .dlg-row{grid-template-columns:58px minmax(0,1fr);gap:6px}
+  .dlg-row label.ck{font-size:11px;white-space:nowrap;flex:none}
+  .dlg-row input[type="text"],.dlg-row select{box-sizing:border-box;width:100%;min-width:0}
+  .dlg-row input[type="password"]{width:80px!important;flex:none}
+  .dock{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+  .alog li{display:flex;gap:6px;align-items:flex-start}
+  .alog li span:last-child{flex:1;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
   .ci-sum{bottom:calc(64px + env(safe-area-inset-bottom,0px));padding:10px 12px;font-size:12px}
+
+  /* Capture */
+  .ms-row{grid-template-columns:78px minmax(0,1fr);font-size:11px}
+  .mask-tag{font-size:9.5px;padding:1px 4px}
 
   /* General elements */
   .fld{grid-template-columns:minmax(0,1fr)}
@@ -895,16 +928,20 @@ ul,ol{margin:0;padding:0;list-style:none}
   .kv{grid-template-columns:minmax(0,1fr)}
   .flow{grid-template-columns:minmax(0,1fr)}
   .card{border-radius:12px}
+  .card-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 10px}
+  .card-h .sp{display:none}
+  .card-h h3{font-size:15px;word-break:keep-all;overflow-wrap:anywhere}
   .pad{padding:14px}
-  .ph h1{font-size:20px}
+  .ph h1{font-size:20px;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
+  .ph p{font-size:12.5px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
 }
 @media (max-width:420px){
   .top{padding:0 8px}
   .tb-k{display:none}
   .tb-prev span{display:none}
   .tb-next span{max-width:55vw}
-  .ltable th{width:75px;font-size:11px;padding:5px 4px}
-  .ltable td{padding:5px 4px}
+  .ltable th{width:70px;font-size:11px;padding:5px 3px}
+  .ltable td{padding:5px 3px}
   .stage-top{flex-direction:column;align-items:flex-start}
 }
 @media (prefers-reduced-motion:reduce){
@@ -1440,7 +1477,7 @@ function vLesson() {
   <div class="lesson">
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
       <section class="card pad"><div class="card-h"><h3>처리 순서</h3><span class="sp"></span><span class="muted" style="font-size:12px">출처를 누르면 원문 위치를 봅니다</span></div>
-        <ol class="steps">${LESSON.steps.map((s, i) => `<li class="${L.weak === i ? 'weak' : ''}"><span></span><div>${L.weak === i ? `<span class="weak-note">${ic('warn')}다시 볼 단계</span>` : ''}<b>${s.t}</b><p>${s.d}</p>${srcBtn(s.src[0], s.src[1])}</div></li>`).join('')}</ol>
+        <ol class="steps">${LESSON.steps.map((s, i) => `<li class="${L.weak === i ? 'weak' : ''}"><div>${L.weak === i ? `<span class="weak-note">${ic('warn')}다시 볼 단계</span>` : ''}<b>${s.t}</b><p>${s.d}</p>${srcBtn(s.src[0], s.src[1])}</div></li>`).join('')}</ol>
       </section>
       <section class="card pad"><div class="card-h"><h3>전임자 메모</h3>${pill('승인됨', 'ok')}</div>
         <blockquote class="memo">“전 거주지 자료가 늦어지면 받은 자료로 먼저 산정하고, 차이가 생기면 정정했습니다. 통지가 늦어지면 그 자체가 민원이 됩니다.”<cite>전임자 B 주무관 · 2026.09.30 승인</cite></blockquote>
